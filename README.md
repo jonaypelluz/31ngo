@@ -1,4 +1,8 @@
-31ngo
+### 31ngo Game
+
+=============
+
+**Copy env.local to .env**
 
 ```
 npm install

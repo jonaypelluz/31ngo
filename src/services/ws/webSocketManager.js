@@ -12,7 +12,9 @@ class WebSocketManager extends EventEmitter {
   }
 
   connect(gameId, uuid) {
-    this.ws = new WebSocket('wss://31ngo.com:8443');
+    this.ws = new WebSocket(
+      process.env.VUE_APP_WS_URL + ':' + process.env.VUE_APP_WS_PORT
+    );
 
     this.ws.onmessage = event => {
       const response = JSON.parse(event.data);
