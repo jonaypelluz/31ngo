@@ -1,1 +1,9 @@
-# 31ngo
+31ngo
+
+```
+npm install
+```
+
+```
+npm run serve
+```
