@@ -1,3 +1,4 @@
+require('dotenv').config();
 const https =
   process.env.APP_ENV === 'prod' ? require('https') : require('http');
 const express = require('express');
@@ -17,7 +18,7 @@ if (process.env.APP_ENV === 'prod') {
 
 const wss = new WebSocket.Server({ server });
 
-const serverPort = 8443;
+const serverPort = process.env.WS_PORT;
 
 let games = [];
 
