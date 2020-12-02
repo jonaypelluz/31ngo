@@ -64,7 +64,6 @@ class BingoCard {
           return 0.5 - Math.random();
         });
 
-        // let pos = this.getRandNumInARange(this.#COLS - 1, 0);
         let pos = x === 1 && colsOddNum.length > 0 ? colsOddNum[0] : colsNum[0];
         if (!cols[pos]) {
           cols[pos] = 0;

@@ -3,12 +3,12 @@ import { db } from './firebase';
 export default {
   async getUserGame(uuid) {
     return new Promise(resolve => {
-      db.ref('users')
+      db.ref(process.env.VUE_APP_DB_USERS)
         .child(uuid)
         .once('value', function(snapshot) {
           if (snapshot.val()) {
             const game = snapshot.val();
-            db.ref('games')
+            db.ref(process.env.VUE_APP_DB_GAMES)
               .child(game.game)
               .once('value', function(snapshot) {
                 resolve(snapshot.val());
@@ -21,10 +21,10 @@ export default {
   },
   async deleteGame(gameId, uuid) {
     return new Promise(resolve => {
-      db.ref('games')
+      db.ref(process.env.VUE_APP_DB_GAMES)
         .child(gameId)
         .remove();
-      db.ref('users')
+      db.ref(process.env.VUE_APP_DB_USERS)
         .child(uuid)
         .remove();
       resolve(true);

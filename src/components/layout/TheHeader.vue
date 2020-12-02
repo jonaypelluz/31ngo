@@ -8,19 +8,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  computed: {
-    hostUrl() {
-      return { name: 'host' };
-    },
-    playerUrl() {
-      return { name: 'player' };
-    },
-  },
-};
-</script>
-
 <style lang="scss" scoped>
 a {
   color: #fff;

@@ -3,7 +3,7 @@
     <div v-if="show" @click="tryClose" class="backdrop"></div>
     <transition name="dialog">
       <dialog open v-if="show">
-        <header>
+        <header v-if="title">
           <slot name="header">
             <h2>{{ title }}</h2>
           </slot>

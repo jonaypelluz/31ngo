@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import gameApi from '@/services/api/game.js';
+
 export default {
   data() {
     return {
@@ -41,7 +43,7 @@ export default {
   methods: {
     async checkGame() {
       this.isLoading = true;
-      const game = await this.$store.dispatch('gam/getGame', this.gameId);
+      const game = await gameApi.fetchGame(this.gameId);
       if (!game.hash) {
         this.error = 'No se ha encontrado esa partida.';
       } else {
