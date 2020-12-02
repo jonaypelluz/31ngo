@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import gameApi from '@/services/api/game.js';
 import PlayerCard from '@/components/game/PlayerCard';
+import fb from '@/services/firebase/fb.js';
 import { wsManager } from '@/services/ws/webSocketManager';
 import { mapState } from 'vuex';
 
@@ -99,7 +99,7 @@ export default {
   methods: {
     async addBingoCard(data) {
       this.$store.dispatch('gam/addUserInfo', data);
-      await gameApi.addUserInfo(this.id, this.user.uuid, data);
+      await fb.addUserInfo(this.id, this.user.uuid, data);
       this.sendWsMsg({
         type: 'adduser',
         data: data,
@@ -139,7 +139,7 @@ export default {
     this.isLoading = true;
 
     // Get game
-    const theGame = await gameApi.fetchGame(this.id);
+    const theGame = await fb.getGame(this.id);
     this.$store.dispatch('gam/updateGame', theGame);
     this.isLoading = false;
 
