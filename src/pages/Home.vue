@@ -15,7 +15,6 @@ import fb from '@/services/firebase/fb.js';
 export default {
   data() {
     return {
-      games: [],
       showActions: false,
     };
   },
