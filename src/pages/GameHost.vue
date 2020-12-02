@@ -66,7 +66,7 @@ import Constants from '@/constants.js';
 import HostCard from '@/components/game/HostCard';
 import InfoCard from '@/components/game/InfoCard';
 import NumbersCard from '@/components/game/NumbersCard';
-import gameApi from '@/services/api/game.js';
+import fb from '@/services/firebase/fb.js';
 import { mapState } from 'vuex';
 import { wsManager } from '@/services/ws/webSocketManager';
 
@@ -126,7 +126,7 @@ export default {
           Math.floor(Math.random() * Constants.BINGO_CARD_TOTAL_NUMBERS) + 1;
         if (!this.game.drawnNumbers.includes(randNum)) {
           this.$store.dispatch('gam/addDrawnNumber', randNum);
-          await gameApi.addDrawnNumbers(this.game);
+          await fb.addDrawnNumbers(this.game);
           break;
         }
         if (
@@ -145,17 +145,18 @@ export default {
       this.isGameStarted();
     },
     async finishGame() {
+      await fb.hasFinished(this.game.hash);
+      this.$store.dispatch('gam/hasFinished');
       this.sendWsMsg({
         type: 'finish',
         uuid: this.user.uuid,
       });
-      await gameApi.hasFinished(this.game.hash);
     },
     async getGameInfo() {
       this.isLoading = true;
 
       // Get game
-      const theGame = await gameApi.fetchGame(this.id);
+      const theGame = await fb.getGame(this.id);
       this.$store.dispatch('gam/updateGame', theGame);
 
       if (!this.game || this.game.host !== this.user.uuid) {
@@ -170,7 +171,7 @@ export default {
         this.game.drawnNumbers &&
         this.game.drawnNumbers.length > 0
       ) {
-        await gameApi.hasStarted(this.id);
+        await fb.hasStarted(this.id);
         this.$store.dispatch('gam/hasStarted');
       }
     },
@@ -197,7 +198,7 @@ export default {
 
         // We wait to update the firebase before we send websocket message
         const winners = this.$store.getters['gam/getWinners'];
-        await gameApi.updateWinners(this.game.hash, winners);
+        await fb.updateWinners(this.game.hash, winners);
 
         this.sendWsMsg({
           type: 'winner',

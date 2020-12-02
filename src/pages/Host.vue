@@ -47,7 +47,6 @@
 <script>
 import helpers from '@/utils/helpers.js';
 import fb from '@/services/firebase/fb.js';
-import gameApi from '@/services/api/game.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -95,8 +94,7 @@ export default {
       };
       this.$store.dispatch('gam/createGame', theGame);
       const gameData = this.$store.getters['gam/getGame'];
-      await gameApi.createGame(gameData);
-      await gameApi.addGameToUser(gameData);
+      await fb.createGame(gameData);
       this.game = theGame;
     },
   },

@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import gameApi from '@/services/api/game.js';
+import fb from '@/services/firebase/fb.js';
 
 export default {
   data() {
@@ -43,7 +43,7 @@ export default {
   methods: {
     async checkGame() {
       this.isLoading = true;
-      const game = await gameApi.fetchGame(this.gameId);
+      const game = await fb.getGame(this.gameId);
       if (!game.hash) {
         this.error = 'No se ha encontrado esa partida.';
       } else {
