@@ -26,7 +26,22 @@
         </base-button>
       </div>
     </div>
-    <player-card :game="game" @add-bingo-card="addBingoCard" />
+    <player-card :game="game" @add-bingo-card="addName" />
+    <base-dialog :show="showNameForm">
+      Añade un nombre de jugador
+      <input
+        type="text"
+        placeholder="Nombre"
+        class="form-control"
+        v-model="userName"
+      />
+      <span class="text-danger" v-if="showNameError">
+        Tienes que añadir un nombre
+      </span>
+      <template #actions>
+        <base-button @click="addBingoCard">Enviar</base-button>
+      </template>
+    </base-dialog>
     <base-dialog :show="yell && yell.type !== null">
       <div class="text-center">
         <p>{{ yellTitle }}</p>
@@ -54,6 +69,10 @@ export default {
     return {
       isLoading: false,
       ws: null,
+      showNameForm: false,
+      showNameError: false,
+      userName: null,
+      userData: null,
     };
   },
   computed: {
@@ -84,7 +103,9 @@ export default {
         winner =
           this.game.winners.bingo === this.user.uuid
             ? '¡Has ganado!'
-            : `El ganador es ${this.game.winners.bingo}`;
+            : `El ganador es ${
+                this.game.players[this.game.winners.bingo].name
+              }`;
       }
       return winner;
     },
@@ -97,14 +118,28 @@ export default {
     },
   },
   methods: {
-    async addBingoCard(data) {
-      this.$store.dispatch('gam/addUserInfo', data);
-      await fb.addUserInfo(this.id, this.user.uuid, data);
-      this.sendWsMsg({
-        type: 'adduser',
-        data: data,
-        uuid: this.user.uuid,
-      });
+    addName(data) {
+      this.showNameForm = true;
+      this.userData = data;
+    },
+    async addBingoCard() {
+      if (this.userName === null || this.userData === null) {
+        this.showNameError = true;
+      } else {
+        const data = {
+          ...this.userData,
+          name: this.userName,
+        };
+        this.showNameError = false;
+        this.showNameForm = false;
+        this.$store.dispatch('gam/addUserInfo', data);
+        await fb.addUserInfo(this.id, this.user.uuid, data);
+        this.sendWsMsg({
+          type: 'adduser',
+          data: data,
+          uuid: this.user.uuid,
+        });
+      }
     },
     markNumbers(e) {
       e.target.blur();

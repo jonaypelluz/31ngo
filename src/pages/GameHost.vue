@@ -27,7 +27,7 @@
     <base-dialog :show="showYell" :title="yellTitle" @close="notValidWinner()">
       <div>
         <p>
-          Identificador del jugador: <b>{{ yell.uuid }}</b>
+          Nombre del jugador: <b>{{ game.players[yell.uuid].name }}</b>
         </p>
         <div class="user-bingo-card-wrapper" v-if="yellCard">
           <div
@@ -112,7 +112,7 @@ export default {
         : '';
     },
     winner() {
-      return this.game.winners.bingo;
+      return this.game.players[this.game.winners.bingo].name;
     },
   },
   methods: {
