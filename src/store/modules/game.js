@@ -1,5 +1,3 @@
-import gameApi from '@/services/api/game.js';
-
 const getDefaultState = () => {
   return {
     game: {
@@ -7,12 +5,22 @@ const getDefaultState = () => {
       host: null,
       hasStarted: false,
       hasFinished: false,
-      drawNumber: null,
       drawnNumbers: [],
       winners: [],
       players: {},
       maxPlayers: null
+    },
+    yell: {
+      type: null,
+      uuid: null
     }
+  };
+};
+
+const getDefaultYellState = () => {
+  return {
+    type: null,
+    uuid: null
   };
 };
 
@@ -20,6 +28,9 @@ const getDefaultState = () => {
 const state = getDefaultState();
 
 const getters = {
+  getYell(state) {
+    return state.yell;
+  },
   getGame(state) {
     return state.game;
   },
@@ -32,29 +43,26 @@ const getters = {
   getDrawnNumbers(state) {
     return state.game.drawnNumbers;
   },
-  getDrawNumber(state) {
-    return state.game.drawNumber;
+  getLastDrawnNumber(state) {
+    return state.game.drawnNumbers[state.game.drawnNumbers.length - 1];
   },
   getWinners(state) {
     return state.game.winners ?? [];
-  },
-  hasGameStarted(state) {
-    return state.game.hasStarted;
-  },
-  hasGameFinished(state) {
-    return state.game.hasFinished;
   }
 };
 
 const mutations = {
+  resetGame(state) {
+    Object.assign(state, getDefaultState());
+  },
+  updateYell(state, payload) {
+    state.yell = payload;
+  },
   updateGame(state, payload) {
     state.game = payload;
   },
   updatePlayers(state, payload) {
     state.game.players = payload;
-  },
-  updateDrawNumber(state, payload) {
-    state.game.drawNumber = payload;
   },
   updateDrawnNumbers(state, payload) {
     state.game.drawnNumbers = payload;
@@ -62,8 +70,8 @@ const mutations = {
   updateHasStarted(state, payload) {
     state.game.hasStarted = payload;
   },
-  resetState(state) {
-    Object.assign(state, getDefaultState());
+  updateHasFinished(state, payload) {
+    state.game.hasFinished = payload;
   },
   updateWinners(state, payload) {
     state.game.winners = payload;
@@ -71,61 +79,53 @@ const mutations = {
 };
 
 const actions = {
-  async getGame(context, gameId) {
-    const data = await gameApi.fetchGame(gameId);
-    const game = context.getters.getGame;
-
-    const gameData = {
-      ...game,
-      ...data
-    };
-    context.commit('updateGame', gameData);
-    return context.getters.getGame;
+  addDrawnNumber({ getters, commit }, num) {
+    const drawnNumbers = getters.getDrawnNumbers;
+    if (!drawnNumbers.includes(num)) {
+      drawnNumbers.push(num);
+    }
+    commit('updateDrawnNumbers', drawnNumbers);
   },
-  async createGame(context, data) {
+  addUserInfo({ getters, commit }, userData) {
+    let players = getters.getPlayers;
+    players[userData.uuid] = userData.data;
+    commit('updatePlayers', players);
+  },
+  createGame(context, data) {
     const defaultGame = getDefaultState();
     const gameData = {
       ...defaultGame.game,
       ...data
     };
-
-    await gameApi.createGame(gameData);
-    await gameApi.addGameToUser(gameData);
     context.commit('updateGame', gameData);
   },
-  async addDrawNumber(context, num) {
-    const game = context.getters.getGame;
-    await gameApi.addDrawnNumbers(game);
-    context.commit('updateDrawNumber', num);
-  },
-  async hasStarted(context, gameId) {
-    await gameApi.hasStarted(gameId);
+  hasStarted(context) {
     context.commit('updateHasStarted', true);
   },
-  async hasFinished(context, gameId) {
-    await gameApi.hasFinished(gameId);
-    context.commit('resetState');
-  },
-  async addUserInfo(context, userData) {
-    const user = context.rootGetters.getUser;
-    const game = context.getters.getGame;
-    await gameApi.addUserInfo(game.hash, user.uuid, userData);
-    let players = context.getters.getPlayers;
-    players[user.uuid] = userData;
-    context.commit('updatePlayers', players);
-  },
-  async setWinner({ getters, dispatch }, winData) {
-    const game = getters.getGame;
-    const winners = getters.getWinners;
-    winners[winData.type] = winData.uuid;
-    await gameApi.updateWinners(game.hash, winners);
-    dispatch('setLocalWinners', winners);
+  hasFinished(context) {
+    context.commit('updateHasFinished', true);
   },
   resetGame(context) {
-    context.commit('resetState');
+    context.commit('resetGame');
   },
-  setLocalWinners(context, winners) {
-    context.commit('updateWinners', winners);
+  resetYell(context) {
+    context.commit('updateYell', getDefaultYellState());
+  },
+  setWinner({ getters, commit }, winData) {
+    const winners = getters.getWinners;
+    winners[winData.type] = winData.uuid;
+    commit('updateWinners', winners);
+  },
+  updateGame(context, data) {
+    const game = context.getters.getGame;
+    const gameData = {
+      ...game,
+      ...data
+    };
+    context.commit('updateGame', gameData);
+  },
+  updateYell(context, data) {
+    context.commit('updateYell', data);
   }
 };
 

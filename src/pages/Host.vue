@@ -1,9 +1,9 @@
 <template>
   <base-centre-container>
-    <div class="form-wrapper">
+    <div class="form-wrapper text-center">
       <h2 class="my-3 mb-2">Anfitrión</h2>
-      <div class="text-center" v-if="showActions">
-        <label>{{ secondTitle }}</label>
+      <div v-if="showActions">
+        <label>Introduce cantidad de jugadores</label>
         <div class="controls">
           <base-button v-if="!game" mode="flat" @click="decreasePlayers">
             -
@@ -18,31 +18,28 @@
             +
           </base-button>
         </div>
-        <base-button
-          mode="animation"
-          v-if="showCreateBtn && !game"
-          @click="createGame"
-        >
+        <base-button mode="animation" v-if="showCreateBtn" @click="createGame">
           Crear partida
         </base-button>
-        <base-card v-if="game">
-          <h3 class="mb-4">Partida creada</h3>
-          <h5>
-            Copia el código
-            <span class="d-block mt-2 mb-5">
-              <span class="black">{{ game.hash }}</span>
-              <img
-                class="ml-3 copy-svg"
-                src="@/assets/icons/copy.svg"
-                @click="copyHash"
-              />
-            </span>
-          </h5>
-          <base-button class="mb-5" mode="animation" link :to="hostUrl">
-            Entrar en la partida
-          </base-button>
-        </base-card>
       </div>
+      <base-card v-if="game">
+        <h3 class="mb-4">Partida creada</h3>
+        <h5>
+          Copia el código
+          <span class="d-block mt-2 mb-3">
+            <span class="black">{{ game.hash }}</span>
+            <img
+              class="ml-3 copy-svg"
+              src="@/assets/icons/copy.svg"
+              @click="copyHash"
+            />
+            <div class="black mt-2">{{ copiedText }}</div>
+          </span>
+        </h5>
+        <base-button class="mb-5" mode="animation" link :to="hostUrl">
+          Entrar en la partida
+        </base-button>
+      </base-card>
     </div>
   </base-centre-container>
 </template>
@@ -50,23 +47,24 @@
 <script>
 import helpers from '@/utils/helpers.js';
 import fb from '@/services/firebase/fb.js';
+import gameApi from '@/services/api/game.js';
+import { mapState } from 'vuex';
 
 export default {
   data() {
     return {
       players: 0,
       game: null,
-      uuid: null,
-      hash: '',
-      showCreateBtn: false,
-      showActions: false,
+      copiedText: '',
     };
   },
   computed: {
-    secondTitle() {
-      return this.game
-        ? 'Cantidad de jugadores'
-        : 'Introduce cantidad de jugadores';
+    ...mapState(['user']),
+    showCreateBtn() {
+      return !this.game && this.players > 0 && this.players <= 20;
+    },
+    showActions() {
+      return !this.game;
     },
     hostUrl() {
       return `/games/host/${this.game.hash}`;
@@ -75,55 +73,37 @@ export default {
   methods: {
     copyHash() {
       navigator.clipboard.writeText(this.game.hash);
+      this.copiedText = '¡Copiado!';
     },
     increasePlayers() {
-      if (!this.hash) {
-        this.createHash();
-      }
       this.players++;
-    },
-    decreasePlayers() {
-      if (!this.hash) {
-        this.createHash();
-      }
-      this.players--;
-    },
-    async createGame() {
-      const theGame = {
-        hash: this.hash,
-        maxPlayers: this.players,
-        host: this.uuid,
-      };
-      await this.$store.dispatch('gam/createGame', theGame);
-      this.game = theGame;
-    },
-    createHash() {
-      this.hash = helpers.createHash();
-    },
-  },
-  watch: {
-    players() {
       if (this.players > 20) {
         this.players = 20;
       }
+    },
+    decreasePlayers() {
+      this.players--;
       if (this.players < 0) {
         this.players = 0;
       }
-      this.showCreateBtn = this.players > 0 && this.players <= 20;
+    },
+    async createGame() {
+      const theGame = {
+        hash: helpers.createHash(),
+        maxPlayers: this.players,
+        host: this.user.uuid,
+      };
+      this.$store.dispatch('gam/createGame', theGame);
+      const gameData = this.$store.getters['gam/getGame'];
+      await gameApi.createGame(gameData);
+      await gameApi.addGameToUser(gameData);
+      this.game = theGame;
     },
   },
   created() {
-    const user = this.$store.getters['getUser'];
-    this.uuid = user.uuid;
-    fb.getUserGame(this.uuid).then((game) => {
-      if (!game) {
-        this.showActions = true;
-      } else {
-        if (game.hasFinished) {
-          this.showActions = true;
-        } else {
-          this.$router.push(`/games/host/${game.hash}`);
-        }
+    fb.getUserGame(this.user.uuid).then((game) => {
+      if (game && game.hasFinished) {
+        this.$router.push(`/games/host/${game.hash}`);
       }
     });
   },

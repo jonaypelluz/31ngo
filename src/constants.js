@@ -1,6 +1,4 @@
 export default {
-  VUE_APP_BASE_URL: 'http://localhost:8080',
-
   //Host Bingo controls
   BINGO_CARD_TOTAL_NUMBERS: 90,
   BINDO_MODE_AUTOMATIC_TIMER: 10, //Seconds
@@ -9,8 +7,6 @@ export default {
   BINDO_MODE_MANUAL: 'manual',
 
   //Bingo Card creation
-  BINGO_CARD_COMBINATION: '121222221',
-  BINGO_CARD_MAX_NUM_OF_RANGES: 8,
   BINGO_CARD_NUMS_IN_ROW: 5,
   BINGO_CARD_NUMS_IN_COL: 2,
   BINGO_CARD_COLS: 9,

@@ -1,22 +1,39 @@
-import gameAxios from './gameAxios';
+import axios from 'axios';
+
+const gameAxios = axios.create({
+  baseURL: process.env.VUE_APP_FB_DB
+});
+
+gameAxios.interceptors.request.use(
+  async config => {
+    config.params = config.params || {};
+    config.params['auth'] = sessionStorage.getItem('userToken');
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
 
 export default {
   fetchGame(id) {
     return gameAxios
-      .get(`/games/${id}.json`)
+      .get(`/${process.env.VUE_APP_DB_GAMES}/${id}.json`)
       .then(response => {
         return response.data;
       })
       .catch(error => console.log(error));
   },
   createGame(game) {
-    return gameAxios.put(`games/${game.hash}.json`, game).then(response => {
-      return response.data;
-    });
+    return gameAxios
+      .put(`${process.env.VUE_APP_DB_GAMES}/${game.hash}.json`, game)
+      .then(response => {
+        return response.data;
+      });
   },
   updateWinners(hash, data) {
     return gameAxios
-      .put(`games/${hash}/winners.json`, {
+      .put(`${process.env.VUE_APP_DB_GAMES}/${hash}/winners.json`, {
         line: data['line'] ?? null,
         bingo: data['bingo'] ?? null
       })
@@ -26,7 +43,7 @@ export default {
   },
   addGameToUser(game) {
     return gameAxios
-      .put(`users/${game.host}.json`, {
+      .put(`${process.env.VUE_APP_DB_USERS}/${game.host}.json`, {
         game: game.hash
       })
       .then(response => {
@@ -35,28 +52,31 @@ export default {
   },
   addDrawnNumbers(game) {
     return gameAxios
-      .put(`games/${game.hash}/drawnNumbers.json`, game.drawnNumbers)
+      .put(
+        `${process.env.VUE_APP_DB_GAMES}/${game.hash}/drawnNumbers.json`,
+        game.drawnNumbers
+      )
       .then(response => {
         return response.data;
       });
   },
   hasStarted(hash) {
     return gameAxios
-      .put(`games/${hash}/hasStarted.json`, true)
+      .put(`${process.env.VUE_APP_DB_GAMES}/${hash}/hasStarted.json`, true)
       .then(response => {
         return response.data;
       });
   },
   hasFinished(hash) {
     return gameAxios
-      .put(`games/${hash}/hasFinished.json`, true)
+      .put(`${process.env.VUE_APP_DB_GAMES}/${hash}/hasFinished.json`, true)
       .then(response => {
         return response.data;
       });
   },
   addUserInfo(hash, uuid, data) {
     return gameAxios
-      .put(`games/${hash}/players/${uuid}.json`, data)
+      .put(`${process.env.VUE_APP_DB_GAMES}/${hash}/players/${uuid}.json`, data)
       .then(response => {
         return response.data;
       });
