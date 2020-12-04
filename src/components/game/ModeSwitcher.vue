@@ -32,26 +32,6 @@ export default {
       this.$emit('set-bingo-mode', !this.automatic);
     },
   },
-
-  // setBingoMode() {
-  //   clearInterval(this.counterInterval);
-  //   if (t<) {
-  //     this.counterInterval = setInterval(() => {
-  //       this.timer--;
-  //       if (this.timer <= 0) {
-  //         this.timer = Constants.BINDO_MODE_AUTOMATIC_TIMER;
-  //         this.showTimer = false;
-  //         this.$emit('set-bingo-mode', Constants.BINDO_MODE_AUTOMATIC);
-  //         clearInterval(this.counterInterval);
-  //       }
-  //     }, 1000);
-  //   } else {
-  //     this.timer = Constants.BINDO_MODE_AUTOMATIC_TIMER;
-  //     this.showTimer = true;
-  //     this.$emit('set-bingo-mode', Constants.BINDO_MODE_MANUAL);
-  //     clearInterval(this.counterInterval);
-  //   }
-  // },
 };
 </script>
 

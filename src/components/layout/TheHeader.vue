@@ -18,10 +18,7 @@ a {
 }
 
 header {
-  position: fixed;
-  left: 5px;
-  top: 5px;
-  z-index: 1001;
+  height: 50px;
 }
 
 .main-logo {

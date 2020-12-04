@@ -5,6 +5,9 @@ export default {
   BINDO_MODE_AUTOMATIC_DRAW: 5000, //Milliseconds
   BINDO_MODE_AUTOMATIC: 'automatic',
   BINDO_MODE_MANUAL: 'manual',
+  BINDO_MODE_PRIVATE: 'private',
+  BINDO_MODE_PUBLIC: 'public',
+  BINDO_MODE_PRIVATE_MAX_PLAYERS: 40,
 
   //Bingo Card creation
   BINGO_CARD_NUMS_IN_ROW: 5,

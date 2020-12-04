@@ -52,9 +52,14 @@ router.beforeEach(async (to, from, next) => {
     await auth.signInAnonymously();
   }
   auth.onAuthStateChanged(user => {
-    user.getIdToken().then(token => {
-      sessionStorage.setItem('userToken', token);
-    });
+    if (!user) {
+      //TODO: fix 400 error when account is deleted from firebase
+      sessionStorage.removeItem('userToken');
+    } else {
+      user.getIdToken().then(token => {
+        sessionStorage.setItem('userToken', token);
+      });
+    }
   });
 
   //uuid

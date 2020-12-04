@@ -1,9 +1,13 @@
 <template>
   <base-centre-container>
     <h1><img class="logo mt-4 mb-2" src="@/assets/logo.svg" alt="31ngo" /></h1>
-    <base-button v-if="showActions" link :to="hostUrl" class="mr-5"
-      >Anfitrión</base-button
-    >
+    <p class="description">
+      Para poder jugar se ha de crear una partida siendo anfitrión, después con
+      el código creado desde otro explorador se podrá acceder a la partida
+    </p>
+    <base-button v-if="showActions" link :to="hostUrl" class="mr-5">
+      Anfitrión
+    </base-button>
     <base-button v-if="showActions" link :to="playerUrl">Jugador</base-button>
   </base-centre-container>
 </template>
@@ -52,7 +56,12 @@ export default {
 <style lang="scss" scoped>
 .logo {
   width: 100%;
-  max-width: 10em;
+  max-width: 6em;
+}
+
+.description {
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
 }
 
 @media (max-width: 575px) {

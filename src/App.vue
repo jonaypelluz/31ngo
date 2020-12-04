@@ -36,6 +36,7 @@ export default {
 html,
 body {
   height: 100%;
+  min-width: 360px;
 }
 
 body {
@@ -43,6 +44,10 @@ body {
   color: #fff;
   font-weight: 300;
   background: $primary;
+}
+
+.black {
+  color: #000;
 }
 
 #app {

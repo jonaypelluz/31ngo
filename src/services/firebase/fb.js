@@ -9,6 +9,12 @@ export default {
       resolve(true);
     });
   },
+  async addUsedCode(hash, codes) {
+    return new Promise(resolve => {
+      db.ref(`${process.env.VUE_APP_DB_GAMES}/${hash}/usedCodes`).set(codes);
+      resolve(true);
+    });
+  },
   async addDrawnNumbers(game) {
     return new Promise(resolve => {
       db.ref(`${process.env.VUE_APP_DB_GAMES}/${game.hash}/drawnNumbers`).set(
