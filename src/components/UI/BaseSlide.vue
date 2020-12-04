@@ -32,7 +32,7 @@ export default {
   right: -35em;
   top: 0;
   bottom: 0;
-  min-width: 35em;
+  width: 35em;
   background-color: $secondary;
   z-index: 101;
   border-left: 1px solid #000;

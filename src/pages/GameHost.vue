@@ -1,6 +1,6 @@
 <template>
   <base-centre-container v-if="!isLoading">
-    <host-card
+    <host-controls
       v-if="!game.hasFinished"
       :game="game"
       :numbers="totalNumbers"
@@ -19,10 +19,10 @@
       </div>
     </div>
     <base-slide>
-      <numbers-card :game="game" :uuid="user.uuid" />
+      <host-numbers :game="game" :uuid="user.uuid" />
     </base-slide>
     <base-slide multiple="true">
-      <info-card :game="game" />
+      <host-info :game="game" />
     </base-slide>
     <base-dialog :show="showYell" :title="yellTitle" @close="notValidWinner()">
       <div>
@@ -63,18 +63,18 @@
 
 <script>
 import Constants from '@/constants.js';
-import HostCard from '@/components/game/HostCard';
-import InfoCard from '@/components/game/InfoCard';
-import NumbersCard from '@/components/game/NumbersCard';
+import HostControls from '@/components/game/HostControls';
+import HostInfo from '@/components/game/HostInfo';
+import HostNumbers from '@/components/game/HostNumbers';
 import fb from '@/services/firebase/fb.js';
 import { mapState } from 'vuex';
 import { wsManager } from '@/services/ws/webSocketManager';
 
 export default {
   components: {
-    InfoCard,
-    HostCard,
-    NumbersCard,
+    HostInfo,
+    HostControls,
+    HostNumbers,
   },
   props: ['id'],
   data() {

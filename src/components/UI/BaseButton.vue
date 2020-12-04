@@ -61,10 +61,6 @@ a {
   &:focus {
     background-color: $fifth;
   }
-  &:active {
-    position: relative;
-    top: 1px;
-  }
   &.sm {
     padding: 0.2rem 1rem;
   }
@@ -75,7 +71,6 @@ a {
     color: #fff;
     &.black {
       border-color: #000;
-      color: #000;
     }
     &:hover,
     &:focus {

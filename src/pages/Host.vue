@@ -1,22 +1,39 @@
 <template>
   <base-centre-container>
     <div class="form-wrapper text-center">
-      <h2 class="my-3 mb-2">Anfitrión</h2>
+      <h2 class="mb-2">Anfitrión</h2>
       <div v-if="showActions">
-        <label>Introduce cantidad de jugadores</label>
-        <div class="controls">
-          <base-button v-if="!game" mode="flat" @click="decreasePlayers">
-            -
+        <div class="game-mode" v-if="!mode">
+          <label>Elige el modo de juego</label>
+          <p class="description">
+            En el modo de juego <b>PÚBLICO</b> podrán participar los jugadores
+            que quieran, en el <b>PRIVADO</b> se limita hasta 40 jugadores que
+            tendrán un código de partida privado para cada uno de ellos. Una vez
+            que el anfitrión empieza la partida no se podrá acceder a ella.
+          </p>
+          <base-button mode="flat" @click="chooseGameMode('private')">
+            Privado
           </base-button>
-          <span class="form-control">{{ players }}</span>
-          <base-button
-            v-if="!game"
-            mode="flat"
-            @click="increasePlayers"
-            class="pb-0"
-          >
-            +
+          <base-button class="ml-3" @click="chooseGameMode('public')">
+            Público
           </base-button>
+        </div>
+        <div v-if="mode === 'private'">
+          <label>Introduce cantidad de jugadores</label>
+          <div class="controls">
+            <base-button v-if="!game" mode="flat" @click="decreasePlayers">
+              -
+            </base-button>
+            <span class="form-control">{{ players }}</span>
+            <base-button
+              v-if="!game"
+              mode="flat"
+              @click="increasePlayers"
+              class="pb-0"
+            >
+              +
+            </base-button>
+          </div>
         </div>
         <base-button mode="animation" v-if="showCreateBtn" @click="createGame">
           Crear partida
@@ -25,7 +42,7 @@
       <base-card v-if="game">
         <h3 class="mb-4">Partida creada</h3>
         <h5>
-          Copia el código
+          Copia el código de la partida y envíalo a quien quieras que participe
           <span class="d-block mt-2 mb-3">
             <span class="black">{{ game.hash }}</span>
             <img
@@ -45,6 +62,7 @@
 </template>
 
 <script>
+import Constants from '@/constants.js';
 import helpers from '@/utils/helpers.js';
 import fb from '@/services/firebase/fb.js';
 import { mapState } from 'vuex';
@@ -55,12 +73,18 @@ export default {
       players: 0,
       game: null,
       copiedText: '',
+      mode: null,
     };
   },
   computed: {
     ...mapState(['user']),
     showCreateBtn() {
-      return !this.game && this.players > 0 && this.players <= 20;
+      return (
+        !this.game &&
+        (this.mode === Constants.BINDO_MODE_PUBLIC ||
+          (this.players > 0 &&
+            this.players <= Constants.BINDO_MODE_PRIVATE_MAX_PLAYERS))
+      );
     },
     showActions() {
       return !this.game;
@@ -70,14 +94,22 @@ export default {
     },
   },
   methods: {
+    chooseGameMode(mode) {
+      if (
+        mode === Constants.BINDO_MODE_PRIVATE ||
+        mode === Constants.BINDO_MODE_PUBLIC
+      ) {
+        this.mode = mode;
+      }
+    },
     copyHash() {
       navigator.clipboard.writeText(this.game.hash);
       this.copiedText = '¡Copiado!';
     },
     increasePlayers() {
       this.players++;
-      if (this.players > 20) {
-        this.players = 20;
+      if (this.players > Constants.BINDO_MODE_PRIVATE_MAX_PLAYERS) {
+        this.players = Constants.BINDO_MODE_PRIVATE_MAX_PLAYERS;
       }
     },
     decreasePlayers() {
@@ -87,10 +119,18 @@ export default {
       }
     },
     async createGame() {
+      let codes = [];
+      if (this.mode === Constants.BINDO_MODE_PRIVATE) {
+        for (let i = 0; i < this.players; i++) {
+          codes.push(helpers.createHash(8));
+        }
+      }
       const theGame = {
         hash: helpers.createHash(),
         maxPlayers: this.players,
         host: this.user.uuid,
+        mode: this.mode,
+        codes: codes,
       };
       this.$store.dispatch('gam/createGame', theGame);
       const gameData = this.$store.getters['gam/getGame'];
@@ -112,6 +152,20 @@ export default {
 label {
   font-size: 1.5rem;
   margin-bottom: 1rem;
+}
+
+.game-mode {
+  label {
+    display: block;
+  }
+}
+
+.description {
+  max-width: 460px;
+  margin: 0 auto 1.5rem;
+  b {
+    font-weight: 800;
+  }
 }
 
 .controls {
@@ -138,10 +192,6 @@ label {
     padding: 0;
     padding-bottom: 0.4rem;
   }
-}
-
-.black {
-  color: #000;
 }
 
 .copy-svg {

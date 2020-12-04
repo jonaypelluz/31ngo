@@ -1,31 +1,14 @@
 <template>
+  <player-actions
+    @yell-action="yellAction"
+    @mark-numbers="markNumbers"
+    :game="game"
+    :drawn-number="drawnNumber"
+    :show-full-house-btn="showFullHouseBtn"
+    :show-line-btn="showLineBtn"
+    :winner="winner"
+  />
   <base-centre-container v-if="!isLoading">
-    <div class="player-drawn-number mb-2">
-      <span class="drawn-number" v-if="drawnNumber">{{ drawnNumber }}</span>
-      <span class="game-finished mr-3" v-if="game.hasFinished">
-        ¡El juego ha finalizado!
-        {{ winner }}
-      </span>
-      <div v-else>
-        <base-button
-          class="line-btn"
-          :class="{ show: showLineBtn }"
-          @click="yellAction($event, 'line')"
-        >
-          ¡Línea!
-        </base-button>
-        <base-button
-          class="bingo-btn ml-3"
-          v-if="showFullHouseBtn"
-          @click="yellAction($event, 'bingo')"
-        >
-          ¡Bingo!
-        </base-button>
-        <base-button v-if="drawnNumber" class="mark-btn" @click="markNumbers">
-          Marcar números
-        </base-button>
-      </div>
-    </div>
     <player-card :game="game" @add-bingo-card="addName" />
     <base-dialog :show="showNameForm">
       Añade un nombre de jugador
@@ -55,6 +38,7 @@
 </template>
 
 <script>
+import PlayerActions from '@/components/game/PlayerActions';
 import PlayerCard from '@/components/game/PlayerCard';
 import fb from '@/services/firebase/fb.js';
 import { wsManager } from '@/services/ws/webSocketManager';
@@ -63,6 +47,7 @@ import { mapState } from 'vuex';
 export default {
   components: {
     PlayerCard,
+    PlayerActions,
   },
   props: ['id'],
   data() {
@@ -141,8 +126,7 @@ export default {
         });
       }
     },
-    markNumbers(e) {
-      e.target.blur();
+    markNumbers() {
       document.querySelectorAll('.number').forEach((number) => {
         if (
           this.game.drawnNumbers.includes(parseInt(number.innerText)) &&
@@ -158,8 +142,7 @@ export default {
         gameId: this.id,
       });
     },
-    yellAction(e, type) {
-      e.target.blur();
+    yellAction(type) {
       this.$store.dispatch('gam/updateYell', {
         type: type,
         uuid: this.user.uuid,
@@ -186,118 +169,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import '@/scss/_variables.scss';
-
-.player-drawn-number {
-  max-width: 76%;
-  margin: 0 auto;
-  position: relative;
-  font-size: 2rem;
-  .drawn-number {
-    color: #000;
-    background-color: $secondary;
-    display: inline-block;
-    font-weight: 800;
-    width: 1.5em;
-    border-radius: 5em;
-    position: absolute;
-    left: -0.5em;
-    top: 0.5em;
-    z-index: 101;
-    font-size: 3rem;
-  }
-  .game-finished {
-    font-size: 1rem;
-  }
-}
-
-.spinner-border {
-  margin: 3rem;
-  width: 3rem;
-  height: 3rem;
-}
-
-.bingo-btn,
-.line-btn,
-.mark-btn {
-  background: $secondary;
-  border-color: $secondary;
-  position: relative;
-  box-shadow: none;
-  border-radius: 1rem 1rem 0 0;
-  top: 8px;
-  &:hover,
-  &:focus {
-    position: relative;
-    top: 8px;
-    background: $secondary;
-  }
-}
-
-.mark-btn {
-  float: right;
-  margin-right: 3rem;
-  top: 14px;
-  &:hover,
-  &:focus {
-    top: 14px;
-  }
-}
-
-.line-btn {
-  visibility: hidden;
-  &.show {
-    visibility: visible;
-  }
-}
-
-@media (min-width: 320px) {
-  .player-drawn-number {
-    .drawn-number {
-      font-size: 2.3rem;
-      top: 0.7em;
-    }
-  }
-  .bingo-btn,
-  .line-btn,
-  .mark-btn {
-    font-size: 0.8rem;
-    padding: 0.2rem 0.5rem;
-    top: 32px;
-    &:hover,
-    &:focus {
-      top: 32px;
-    }
-  }
-
-  .mark-btn {
-    margin-right: 2rem;
-  }
-}
-
-@media (max-width: 575px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-
-@media (min-width: 576px) and (max-width: 767px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-</style>

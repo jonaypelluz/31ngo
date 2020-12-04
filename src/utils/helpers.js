@@ -7,15 +7,15 @@ export default {
     });
   },
 
-  createHash: () => {
+  createHash: (qty = 6) => {
     return (
       Math.random()
         .toString(36)
-        .substring(2, 6)
+        .substring(2, qty)
         .toUpperCase() +
       Math.random()
         .toString(36)
-        .substring(2, 6)
+        .substring(2, qty)
         .toUpperCase()
     );
   },
