@@ -176,6 +176,10 @@ export default {
   .host-card {
     max-width: 96%;
   }
+  .drawn-number {
+    font-size: 8rem;
+    margin-bottom: 1rem;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {

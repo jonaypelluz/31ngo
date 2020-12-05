@@ -40,7 +40,7 @@
         </base-button>
       </div>
       <base-card v-if="game">
-        <h3 class="mb-4">Partida creada</h3>
+        <h3 class="mb-2">Partida creada</h3>
         <h5>
           Copia el código de la partida y envíalo a quien quieras que participe
           <span class="d-block mt-2 mb-3">
@@ -52,8 +52,12 @@
             />
             <div class="black mt-2">{{ copiedText }}</div>
           </span>
+          <div v-if="mode === 'private'">
+            Los códigos individuales los encontrarás al entrar en la partida en
+            la barra lateral.
+          </div>
         </h5>
-        <base-button class="mb-5" mode="animation" link :to="hostUrl">
+        <base-button class="mb-2" mode="animation" link :to="hostUrl">
           Entrar en la partida
         </base-button>
       </base-card>
