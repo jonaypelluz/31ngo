@@ -76,13 +76,13 @@ input[type='number'] {
 
 @media (max-width: 575px) {
   .form-wrapper {
-    max-width: 80%;
+    max-width: 95%;
   }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
   .form-wrapper {
-    max-width: 60%;
+    max-width: 95%;
   }
 }
 
