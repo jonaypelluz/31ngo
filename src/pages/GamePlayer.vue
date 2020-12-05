@@ -1,40 +1,35 @@
 <template>
+  <player-actions
+    @yell-action="yellAction"
+    @mark-numbers="markNumbers"
+    :game="game"
+    :drawn-number="drawnNumber"
+    :show-full-house-btn="showFullHouseBtn"
+    :show-line-btn="showLineBtn"
+    :winner="winner"
+  />
   <base-centre-container v-if="!isLoading">
-    <div class="player-drawn-number mb-2">
-      <span class="drawn-number" v-if="drawnNumber">{{ drawnNumber }}</span>
-      <span class="game-finished mr-3" v-if="hasFinished">
-        ¡El juego ha finalizado!
-        {{ winner }}
+    <player-card :game="game" @add-bingo-card="addName" />
+    <base-dialog :show="showNameForm">
+      Añade un nombre de jugador
+      <input
+        type="text"
+        placeholder="Nombre"
+        class="form-control"
+        v-model="userName"
+      />
+      <span class="text-danger" v-if="showNameError">
+        Tienes que añadir un nombre
       </span>
-      <div v-else>
-        <base-button
-          class="line-btn"
-          :class="{ show: isNotLineWinner }"
-          @click="yellLine"
-        >
-          ¡Línea!
-        </base-button>
-        <base-button
-          class="bingo-btn ml-3"
-          v-if="isNotFullHouseWinner"
-          @click="yellFullHouse"
-        >
-          ¡Bingo!
-        </base-button>
-        <base-button v-if="drawnNumber" class="mark-btn" @click="markNumbers">
-          Marcar números
-        </base-button>
-      </div>
-    </div>
-    <player-card :game="game" @add-bingo-card="addBingoCard" />
-    <base-dialog :show="yell !== null" :title="dialogTitle">
+      <template #actions>
+        <base-button @click="addBingoCard">Enviar</base-button>
+      </template>
+    </base-dialog>
+    <base-dialog :show="yell && yell.type !== null">
       <div class="text-center">
-        <p>
-          El anfitrión está revisando
-          {{ yell !== 'line' ? 'el bingo' : 'la línea' }}...
-        </p>
+        <p>{{ yellTitle }}</p>
         <div class="spinner-border text-info" role="status">
-          <span class="sr-only">Loading...</span>
+          <span class="sr-only">Comprobando...</span>
         </div>
       </div>
       <template #actions></template>
@@ -43,123 +38,95 @@
 </template>
 
 <script>
+import PlayerActions from '@/components/game/PlayerActions';
 import PlayerCard from '@/components/game/PlayerCard';
+import fb from '@/services/firebase/fb.js';
 import { wsManager } from '@/services/ws/webSocketManager';
+import { mapState } from 'vuex';
 
 export default {
   components: {
     PlayerCard,
+    PlayerActions,
   },
   props: ['id'],
   data() {
     return {
-      drawnNumber: null,
-      game: null,
-      user: null,
       isLoading: false,
       ws: null,
-      yell: null,
+      showNameForm: false,
+      showNameError: false,
+      userName: null,
+      userData: null,
     };
   },
   computed: {
-    dialogTitle() {
-      return `¡Han cantado ${this.yell !== 'line' ? 'bingo' : 'línea'}!`;
+    ...mapState(['user']),
+    ...mapState('gam', ['game', 'yell']),
+    drawnNumber() {
+      return this.$store.getters['gam/getLastDrawnNumber'];
     },
-    isHost() {
-      return this.game && this.game.host === this.user.uuid;
-    },
-    hasFinished() {
-      return this.game.hasFinished;
-    },
-    isNotLineWinner() {
+    showLineBtn() {
       return (
+        this.yell &&
         this.game.drawnNumbers.length > 4 &&
         !this.game.winners.line &&
-        this.yell === null
+        this.yell.type === null
       );
     },
-    isNotFullHouseWinner() {
+    showFullHouseBtn() {
       return (
+        this.yell &&
         this.game.drawnNumbers.length > 14 &&
         !this.game.winners.bingo &&
-        this.yell === null
+        this.yell.type === null
       );
     },
     winner() {
+      let winner = '';
       if (this.game.winners.bingo) {
-        return this.game.winners.bingo === this.user.uuid
-          ? '¡Has ganado!'
-          : `El ganador es ${this.game.winners.bingo}`;
-      } else {
-        return '';
+        winner =
+          this.game.winners.bingo === this.user.uuid
+            ? '¡Has ganado!'
+            : `El ganador es ${
+                this.game.players[this.game.winners.bingo].name
+              }`;
       }
+      return winner;
+    },
+    yellTitle() {
+      return this.yell
+        ? `¡Han cantado ${
+            this.yell.type !== 'line' ? 'bingo' : 'línea'
+          }!... se está revisando...`
+        : '';
     },
   },
   methods: {
-    yellLine(e) {
-      e.target.blur();
-      this.yell = 'line';
-      this.ws.send({
-        gameId: this.id,
-        type: 'line',
-        uuid: this.user.uuid,
-      });
+    addName(data) {
+      this.showNameForm = true;
+      this.userData = data;
     },
-    yellFullHouse(e) {
-      e.target.blur();
-      this.yell = 'bingo';
-      this.ws.send({
-        gameId: this.id,
-        type: 'bingo',
-        uuid: this.user.uuid,
-      });
-    },
-    addBingoCard(data) {
-      this.$store.dispatch('gam/addUserInfo', {
-        numbers: data.numbers,
-        bingoCard: data.bingoCard,
-      });
-      this.ws.send({
-        gameId: this.id,
-        type: 'adduser',
-        data: data,
-        uuid: this.user.uuid,
-      });
-    },
-    async getGameInfo() {
-      this.isLoading = true;
-      this.user = this.$store.getters['getUser'];
-      this.game = await this.$store.dispatch('gam/getGame', this.id);
-      if (!this.game.hash || this.game.host === this.user.uuid) {
-        this.$router.replace('/game-not-found');
+    async addBingoCard() {
+      if (this.userName === null || this.userData === null) {
+        this.showNameError = true;
       } else {
-        this.getDrawnNumber();
-        this.addUserInfo();
-        this.isLoading = false;
+        const data = {
+          ...this.userData,
+          name: this.userName,
+        };
+        this.showNameError = false;
+        this.showNameForm = false;
+        this.$store.dispatch('gam/addUserInfo', data);
+        await fb.addUserInfo(this.id, this.user.uuid, data);
+        this.sendWsMsg({
+          type: 'adduser',
+          data: data,
+          uuid: this.user.uuid,
+        });
       }
     },
-    getDrawnNumber() {
-      if (this.game.drawnNumbers.length > 0 && !this.game.hasFinished) {
-        this.drawnNumber = this.game.drawnNumbers[
-          this.game.drawnNumbers.length - 1
-        ];
-      }
-    },
-    addUserInfo() {
-      let players = this.$store.getters['gam/getPlayers'];
-      if (this.user.uuid in players) {
-        // The user is in the game
-      } else if (
-        Object.keys(players).length < this.game.maxPlayers ||
-        this.game.maxPlayers === 0
-      ) {
-        this.$store.dispatch('gam/addUserInfo', {});
-      } else {
-        this.$router.replace('/game-not-found');
-      }
-    },
-    markNumbers(e) {
-      e.target.blur();
+    markNumbers() {
       document.querySelectorAll('.number').forEach((number) => {
         if (
           this.game.drawnNumbers.includes(parseInt(number.innerText)) &&
@@ -169,166 +136,36 @@ export default {
         }
       });
     },
-    handleWsMsg(data) {
-      if (data.message) {
-        const response = data.message;
-        if (response.gameId === this.id) {
-          this.addDrawnNumber(response);
-          this.isGameFinished(response);
-          this.setWinners(response);
-        }
-        if (response.type === 'line' || response.type === 'bingo') {
-          this.yell = response.type;
-        }
-        if (response.type === 'notwinner') {
-          this.yell = null;
-        }
-      }
+    sendWsMsg(data) {
+      this.ws.send({
+        ...data,
+        gameId: this.id,
+      });
     },
-    setWinners(response) {
-      if (response.type === 'winner') {
-        this.yell = null;
-        let winners = this.$store.getters['gam/getWinners'];
-        winners[response.winType] = response.uuid;
-        this.$store.dispatch('gam/setLocalWinners', winners);
-      }
-    },
-    isGameFinished(response) {
-      if (response.type === 'finish') {
-        this.game.hasFinished = true;
-      }
-    },
-    addDrawnNumber(response) {
-      if (response.type === 'num' && response.num !== null) {
-        this.drawnNumber = response.num;
-        if (!this.game.drawnNumbers.includes(response.num)) {
-          this.game.drawnNumbers.push(response.num);
-        }
-      }
+    yellAction(type) {
+      this.$store.dispatch('gam/updateYell', {
+        type: type,
+        uuid: this.user.uuid,
+      });
+      this.sendWsMsg({
+        type: type,
+        uuid: this.user.uuid,
+      });
     },
   },
-  created() {
-    this.getGameInfo();
-  },
-  mounted() {
+  async mounted() {
+    this.isLoading = true;
+
+    // Get game
+    const theGame = await fb.getGame(this.id);
+    this.$store.dispatch('gam/updateGame', theGame);
+    this.isLoading = false;
+
+    if (!this.game.hash || this.game.host === this.user.uuid) {
+      this.$router.replace('/game-not-found');
+    }
     this.ws = wsManager;
     this.ws.connect(this.id, this.user.uuid);
-    this.ws.on('ws-msg', this.handleWsMsg);
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import '@/scss/_variables.scss';
-
-.player-drawn-number {
-  max-width: 76%;
-  margin: 0 auto;
-  position: relative;
-  font-size: 2rem;
-  .drawn-number {
-    color: #000;
-    background-color: $secondary;
-    display: inline-block;
-    font-weight: 800;
-    width: 1.5em;
-    border-radius: 5em;
-    position: absolute;
-    left: -0.5em;
-    top: 0.5em;
-    z-index: 101;
-    font-size: 3rem;
-  }
-  .game-finished {
-    font-size: 1rem;
-  }
-}
-
-.spinner-border {
-  margin: 3rem;
-  width: 3rem;
-  height: 3rem;
-}
-
-.bingo-btn,
-.line-btn,
-.mark-btn {
-  background: $secondary;
-  border-color: $secondary;
-  position: relative;
-  box-shadow: none;
-  border-radius: 1rem 1rem 0 0;
-  top: 8px;
-  &:hover,
-  &:focus {
-    position: relative;
-    top: 8px;
-    background: $secondary;
-  }
-}
-
-.mark-btn {
-  float: right;
-  margin-right: 3rem;
-  top: 14px;
-  &:hover,
-  &:focus {
-    top: 14px;
-  }
-}
-
-.line-btn {
-  visibility: hidden;
-  &.show {
-    visibility: visible;
-  }
-}
-
-@media (min-width: 320px) {
-  .player-drawn-number {
-    .drawn-number {
-      font-size: 2.3rem;
-      top: 0.7em;
-    }
-  }
-  .bingo-btn,
-  .line-btn,
-  .mark-btn {
-    font-size: 0.8rem;
-    padding: 0.2rem 0.5rem;
-    top: 32px;
-    &:hover,
-    &:focus {
-      top: 32px;
-    }
-  }
-
-  .mark-btn {
-    margin-right: 2rem;
-  }
-}
-
-@media (max-width: 575px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-
-@media (min-width: 576px) and (max-width: 767px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-
-@media (min-width: 992px) and (max-width: 1199px) {
-  .player-drawn-number {
-    max-width: 96%;
-  }
-}
-</style>

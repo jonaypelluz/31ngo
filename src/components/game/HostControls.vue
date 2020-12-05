@@ -21,10 +21,13 @@
       <base-button
         class="action-btn"
         @click="drawTheNumber"
-        v-if="game.drawnNumbers.length < numbers"
+        v-if="showStartBtn"
       >
         {{ btnText }}
       </base-button>
+      <p class="black" v-else>
+        Mínimo tiene que haber un jugador online para poder empezar
+      </p>
     </div>
   </base-card>
 </template>
@@ -55,6 +58,12 @@ export default {
     };
   },
   computed: {
+    showStartBtn() {
+      return (
+        this.game.drawnNumbers.length < this.numbers &&
+        Object.keys(this.game.players).length > 0
+      );
+    },
     shownNumber() {
       return this.number &&
         this.game &&
@@ -124,7 +133,6 @@ export default {
 <style lang="scss" scoped>
 .host-card {
   max-width: 50%;
-  margin-top: 3rem;
 }
 .drawn-number {
   font-size: 10rem;
@@ -167,6 +175,10 @@ export default {
 @media (min-width: 576px) and (max-width: 767px) {
   .host-card {
     max-width: 96%;
+  }
+  .drawn-number {
+    font-size: 8rem;
+    margin-bottom: 1rem;
   }
 }
 

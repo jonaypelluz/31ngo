@@ -32,7 +32,7 @@ export default {
   right: -35em;
   top: 0;
   bottom: 0;
-  min-width: 35em;
+  width: 35em;
   background-color: $secondary;
   z-index: 101;
   border-left: 1px solid #000;
@@ -71,9 +71,9 @@ export default {
 
 @media (max-width: 320px) {
   .slide-wrapper {
-    width: 19em;
-    min-width: 19em;
-    right: -19em;
+    width: 80%;
+    min-width: 80%;
+    right: -80%;
     .slide-btn-wrapper {
       top: 3em;
       left: -3.96em;
@@ -83,9 +83,9 @@ export default {
 
 @media (min-width: 321px) and (max-width: 575px) {
   .slide-wrapper {
-    width: 30em;
-    min-width: 30em;
-    right: -30em;
+    width: 80%;
+    min-width: 80%;
+    right: -80%;
   }
 }
 

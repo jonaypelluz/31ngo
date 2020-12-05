@@ -1,6 +1,6 @@
 <template>
   <base-centre-container v-if="!isLoading">
-    <host-card
+    <host-controls
       v-if="!game.hasFinished"
       :game="game"
       :numbers="totalNumbers"
@@ -19,24 +19,20 @@
       </div>
     </div>
     <base-slide>
-      <numbers-card :game="game" :uuid="user.uuid" />
+      <host-numbers :game="game" :uuid="user.uuid" />
     </base-slide>
     <base-slide multiple="true">
-      <info-card :game="game" />
+      <host-info :game="game" />
     </base-slide>
-    <base-dialog
-      :show="showDialog"
-      :title="dialogTitle"
-      @close="notValidWinner(userUuid, userWin)"
-    >
+    <base-dialog :show="showYell" :title="yellTitle" @close="notValidWinner()">
       <div>
         <p>
-          Identificador del jugador: <b>{{ userUuid }}</b>
+          Nombre del jugador: <b>{{ game.players[yell.uuid].name }}</b>
         </p>
-        <div class="user-bingo-card-wrapper" v-if="userBingoCard">
+        <div class="user-bingo-card-wrapper" v-if="yellCard">
           <div
             class="user-bingo-card"
-            v-for="(row, idx) in userBingoCard"
+            v-for="(row, idx) in yellCard"
             :key="idx"
           >
             <div
@@ -54,14 +50,10 @@
         </div>
       </div>
       <template #actions>
-        <base-button
-          class="black"
-          mode="flat"
-          @click="notValidWinner(userUuid, userWin)"
-        >
+        <base-button class="black" mode="flat" @click="notValidWinner()">
           No válido
         </base-button>
-        <base-button class="ml-5" @click="setValidWinner(userUuid, userWin)">
+        <base-button class="ml-5" @click="setValidWinner()">
           Válido
         </base-button>
       </template>
@@ -71,169 +63,154 @@
 
 <script>
 import Constants from '@/constants.js';
-import HostCard from '@/components/game/HostCard';
-import NumbersCard from '@/components/game/NumbersCard';
+import HostControls from '@/components/game/HostControls';
+import HostInfo from '@/components/game/HostInfo';
+import HostNumbers from '@/components/game/HostNumbers';
+import fb from '@/services/firebase/fb.js';
+import { mapState } from 'vuex';
 import { wsManager } from '@/services/ws/webSocketManager';
-import InfoCard from '@/components/game/InfoCard';
 
 export default {
   components: {
-    InfoCard,
-    HostCard,
-    NumbersCard,
+    HostInfo,
+    HostControls,
+    HostNumbers,
   },
   props: ['id'],
   data() {
     return {
       totalNumbers: Constants.BINGO_CARD_TOTAL_NUMBERS,
-      drawnNumber: null,
-      game: null,
-      user: null,
       isLoading: false,
       ws: null,
-      showDialog: false,
-      userBingoCard: null,
-      userUuid: null,
-      userYell: null,
-      automode: null,
-      userWin: null,
     };
   },
   computed: {
-    hasFinished() {
-      return this.game.hasFinished;
+    ...mapState(['user']),
+    ...mapState('gam', ['yell', 'game']),
+    drawnNumber() {
+      return this.$store.getters['gam/getLastDrawnNumber'];
     },
-    dialogTitle() {
-      return `Comprobar resultados de ${this.userYell}`;
+    automode() {
+      return this.yell.type !== null ? 'stop' : null;
+    },
+    showYell() {
+      return this.yell.type !== null;
+    },
+    yellCard() {
+      let card = null;
+      if (this.showYell) {
+        const player = this.game.players[this.yell.uuid];
+        card = player.bingoCard;
+      }
+      return card;
+    },
+    yellTitle() {
+      return this.yell
+        ? `¡Comprobar resultados de ${
+            this.yell.type !== 'line' ? 'bingo' : 'línea'
+          }!`
+        : '';
     },
     winner() {
-      return this.game.winners.bingo;
+      return this.game.players[this.game.winners.bingo].name;
     },
   },
   methods: {
-    async finishGame() {
-      this.game.hasFinished = true;
-      this.ws.send({
-        gameId: this.id,
-        type: 'finish',
-        uuid: this.user.uuid,
-      });
-      await this.$store.dispatch('gam/hasFinished', this.game.hash);
+    closeYell() {
+      this.$store.dispatch('gam/resetYell');
     },
-    drawNumber() {
+    async drawNumber() {
       let loop = true;
       while (loop) {
         let randNum =
           Math.floor(Math.random() * Constants.BINGO_CARD_TOTAL_NUMBERS) + 1;
         if (!this.game.drawnNumbers.includes(randNum)) {
-          this.game.drawnNumbers.push(randNum);
-          this.$store.dispatch('gam/addDrawNumber', randNum);
-          this.drawnNumber = randNum;
+          this.$store.dispatch('gam/addDrawnNumber', randNum);
+          await fb.addDrawnNumbers(this.game);
           break;
         }
         if (
-          this.game.drawnNumbers.length === Constants.BINGO_CARD_TOTAL_NUMBERS
+          this.game.drawnNumbers.length >= Constants.BINGO_CARD_TOTAL_NUMBERS
         ) {
           break;
         }
       }
-      this.remaingingNumbers =
-        this.totalNumbers - this.game.drawnNumbers.length;
 
-      this.ws.send({
-        gameId: this.id,
+      this.sendWsMsg({
         type: 'num',
         num: this.drawnNumber,
         uuid: this.user.uuid,
       });
 
+      this.isGameStarted();
+    },
+    async finishGame() {
+      await fb.hasFinished(this.game.hash);
+      this.$store.dispatch('gam/hasFinished');
+      this.sendWsMsg({
+        type: 'finish',
+        uuid: this.user.uuid,
+      });
+    },
+    async getGameInfo() {
+      this.isLoading = true;
+
+      // Get game
+      const theGame = await fb.getGame(this.id);
+      this.$store.dispatch('gam/updateGame', theGame);
+
+      if (!this.game || this.game.host !== this.user.uuid) {
+        this.$router.replace('/game-not-found');
+      } else {
+        this.isLoading = false;
+      }
+    },
+    async isGameStarted() {
       if (
         !this.game.hasStarted &&
         this.game.drawnNumbers &&
         this.game.drawnNumbers.length > 0
       ) {
-        this.game.hasStarted = true;
-        this.$store.dispatch('gam/hasStarted', this.id);
+        await fb.hasStarted(this.id);
+        this.$store.dispatch('gam/hasStarted');
       }
     },
-    async getGameInfo() {
-      this.isLoading = true;
-      this.user = this.$store.getters['getUser'];
-      this.game = await this.$store.dispatch('gam/getGame', this.id);
-      if (!this.game || this.game.host !== this.user.uuid) {
-        this.$router.replace('/game-not-found');
-      } else {
-        this.getDrawnNumber();
-        this.isLoading = false;
-      }
+    notValidWinner() {
+      this.sendWsMsg({
+        type: 'notwinner',
+        winType: this.yell.type,
+        uuid: this.yell.uuid,
+      });
+      this.closeYell();
     },
-    getDrawnNumber() {
-      if (this.game.drawnNumbers.length > 0 && !this.game.hasFinished) {
-        this.drawnNumber = this.game.drawnNumbers[
-          this.game.drawnNumbers.length - 1
-        ];
-      }
+    sendWsMsg(data) {
+      this.ws.send({
+        ...data,
+        gameId: this.id,
+      });
     },
-    handleWsMsg(data) {
-      if (data.message) {
-        const response = data.message;
-        if (response.gameId === this.id) {
-          this.addUserToPlayers(response);
-          this.yellCheck(response);
-        }
-      }
-    },
-    addUserToPlayers(response) {
-      if (response.type === 'adduser') {
-        if (!(response.uuid in this.game.players)) {
-          this.game.players[response.uuid] = response.data;
-        }
-      }
-    },
-    yellCheck(response) {
-      if (
-        !this.showDialog &&
-        (response.type === 'line' || response.type === 'bingo')
-      ) {
-        const player = this.game.players[response.uuid];
-        this.showDialog = true;
-        this.userBingoCard = player.bingoCard;
-        this.userUuid = response.uuid;
-        this.userWin = response.type;
-        this.userYell = response.type === 'line' ? 'línea' : 'bingo';
-        this.automode = 'stop';
-      }
-    },
-    async setValidWinner(uuid, type) {
-      if (type === 'line' || type === 'bingo') {
-        await this.$store.dispatch('gam/setWinner', {
-          uuid: uuid,
-          type: type,
+    async setValidWinner() {
+      if (this.yell.type !== null) {
+        this.$store.dispatch('gam/setWinner', {
+          uuid: this.yell.uuid,
+          type: this.yell.type,
         });
-        this.ws.send({
-          gameId: this.id,
+
+        // We wait to update the firebase before we send websocket message
+        const winners = this.$store.getters['gam/getWinners'];
+        await fb.updateWinners(this.game.hash, winners);
+
+        this.sendWsMsg({
           type: 'winner',
-          winType: type,
-          uuid: uuid,
+          winType: this.yell.type,
+          uuid: this.yell.uuid,
         });
-        if (type === 'bingo') {
+
+        if (this.yell.type === 'bingo') {
           this.finishGame();
         }
       }
-      this.closeDialog();
-    },
-    notValidWinner(uuid, type) {
-      this.ws.send({
-        gameId: this.id,
-        type: 'notwinner',
-        winType: type,
-        uuid: uuid,
-      });
-      this.closeDialog();
-    },
-    closeDialog() {
-      this.showDialog = false;
-      this.automode = null;
+      this.closeYell();
     },
   },
   created() {
@@ -242,7 +219,6 @@ export default {
   mounted() {
     this.ws = wsManager;
     this.ws.connect(this.id, this.user.uuid);
-    this.ws.on('ws-msg', this.handleWsMsg);
   },
 };
 </script>

@@ -196,8 +196,11 @@ export default {
 }
 
 @media (min-width: 992px) and (max-width: 1199px) {
+  .wrapper .number {
+    font-size: 4rem;
+  }
   .bingo-card {
-    max-width: 96%;
+    max-width: 90%;
   }
 }
 

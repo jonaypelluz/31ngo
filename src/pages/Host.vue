@@ -1,129 +1,151 @@
 <template>
   <base-centre-container>
-    <div class="form-wrapper">
-      <h2 class="my-3 mb-2">Anfitrión</h2>
-      <div class="text-center" v-if="showActions">
-        <label>{{ secondTitle }}</label>
-        <div class="controls">
-          <base-button v-if="!game" mode="flat" @click="decreasePlayers">
-            -
+    <div class="form-wrapper text-center">
+      <h2 class="mb-2">Anfitrión</h2>
+      <div v-if="showActions">
+        <div class="game-mode" v-if="!mode">
+          <label>Elige el modo de juego</label>
+          <p class="description">
+            En el modo de juego <b>PÚBLICO</b> podrán participar los jugadores
+            que quieran, en el <b>PRIVADO</b> se limita hasta 40 jugadores que
+            tendrán un código de partida privado para cada uno de ellos. Una vez
+            que el anfitrión empieza la partida no se podrá acceder a ella.
+          </p>
+          <base-button mode="flat" @click="chooseGameMode('private')">
+            Privado
           </base-button>
-          <span class="form-control">{{ players }}</span>
-          <base-button
-            v-if="!game"
-            mode="flat"
-            @click="increasePlayers"
-            class="pb-0"
-          >
-            +
+          <base-button class="ml-3" @click="chooseGameMode('public')">
+            Público
           </base-button>
         </div>
-        <base-button
-          mode="animation"
-          v-if="showCreateBtn && !game"
-          @click="createGame"
-        >
+        <div v-if="mode === 'private'">
+          <label>Introduce cantidad de jugadores</label>
+          <div class="controls">
+            <base-button v-if="!game" mode="flat" @click="decreasePlayers">
+              -
+            </base-button>
+            <span class="form-control">{{ players }}</span>
+            <base-button
+              v-if="!game"
+              mode="flat"
+              @click="increasePlayers"
+              class="pb-0"
+            >
+              +
+            </base-button>
+          </div>
+        </div>
+        <base-button mode="animation" v-if="showCreateBtn" @click="createGame">
           Crear partida
         </base-button>
-        <base-card v-if="game">
-          <h3 class="mb-4">Partida creada</h3>
-          <h5>
-            Copia el código
-            <span class="d-block mt-2 mb-5">
-              <span class="black">{{ game.hash }}</span>
-              <img
-                class="ml-3 copy-svg"
-                src="@/assets/icons/copy.svg"
-                @click="copyHash"
-              />
-            </span>
-          </h5>
-          <base-button class="mb-5" mode="animation" link :to="hostUrl">
-            Entrar en la partida
-          </base-button>
-        </base-card>
       </div>
+      <base-card v-if="game">
+        <h3 class="mb-2">Partida creada</h3>
+        <h5>
+          Copia el código de la partida y envíalo a quien quieras que participe
+          <span class="d-block mt-2 mb-3">
+            <span class="black">{{ game.hash }}</span>
+            <img
+              class="ml-3 copy-svg"
+              src="@/assets/icons/copy.svg"
+              @click="copyHash"
+            />
+            <div class="black mt-2">{{ copiedText }}</div>
+          </span>
+          <div v-if="mode === 'private'">
+            Los códigos individuales los encontrarás al entrar en la partida en
+            la barra lateral.
+          </div>
+        </h5>
+        <base-button class="mb-2" mode="animation" link :to="hostUrl">
+          Entrar en la partida
+        </base-button>
+      </base-card>
     </div>
   </base-centre-container>
 </template>
 
 <script>
+import Constants from '@/constants.js';
 import helpers from '@/utils/helpers.js';
 import fb from '@/services/firebase/fb.js';
+import { mapState } from 'vuex';
 
 export default {
   data() {
     return {
       players: 0,
       game: null,
-      uuid: null,
-      hash: '',
-      showCreateBtn: false,
-      showActions: false,
+      copiedText: '',
+      mode: null,
     };
   },
   computed: {
-    secondTitle() {
-      return this.game
-        ? 'Cantidad de jugadores'
-        : 'Introduce cantidad de jugadores';
+    ...mapState(['user']),
+    showCreateBtn() {
+      return (
+        !this.game &&
+        (this.mode === Constants.BINDO_MODE_PUBLIC ||
+          (this.players > 0 &&
+            this.players <= Constants.BINDO_MODE_PRIVATE_MAX_PLAYERS))
+      );
+    },
+    showActions() {
+      return !this.game;
     },
     hostUrl() {
       return `/games/host/${this.game.hash}`;
     },
   },
   methods: {
+    chooseGameMode(mode) {
+      if (
+        mode === Constants.BINDO_MODE_PRIVATE ||
+        mode === Constants.BINDO_MODE_PUBLIC
+      ) {
+        this.mode = mode;
+      }
+    },
     copyHash() {
       navigator.clipboard.writeText(this.game.hash);
+      this.copiedText = '¡Copiado!';
     },
     increasePlayers() {
-      if (!this.hash) {
-        this.createHash();
-      }
       this.players++;
+      if (this.players > Constants.BINDO_MODE_PRIVATE_MAX_PLAYERS) {
+        this.players = Constants.BINDO_MODE_PRIVATE_MAX_PLAYERS;
+      }
     },
     decreasePlayers() {
-      if (!this.hash) {
-        this.createHash();
-      }
       this.players--;
-    },
-    async createGame() {
-      const theGame = {
-        hash: this.hash,
-        maxPlayers: this.players,
-        host: this.uuid,
-      };
-      await this.$store.dispatch('gam/createGame', theGame);
-      this.game = theGame;
-    },
-    createHash() {
-      this.hash = helpers.createHash();
-    },
-  },
-  watch: {
-    players() {
-      if (this.players > 20) {
-        this.players = 20;
-      }
       if (this.players < 0) {
         this.players = 0;
       }
-      this.showCreateBtn = this.players > 0 && this.players <= 20;
+    },
+    async createGame() {
+      let codes = [];
+      if (this.mode === Constants.BINDO_MODE_PRIVATE) {
+        for (let i = 0; i < this.players; i++) {
+          codes.push(helpers.createHash(8));
+        }
+      }
+      const theGame = {
+        hash: helpers.createHash(),
+        maxPlayers: this.players,
+        host: this.user.uuid,
+        mode: this.mode,
+        codes: codes,
+      };
+      this.$store.dispatch('gam/createGame', theGame);
+      const gameData = this.$store.getters['gam/getGame'];
+      await fb.createGame(gameData);
+      this.game = theGame;
     },
   },
   created() {
-    const user = this.$store.getters['getUser'];
-    this.uuid = user.uuid;
-    fb.getUserGame(this.uuid).then((game) => {
-      if (!game) {
-        this.showActions = true;
-      } else {
-        if (game.hasFinished) {
-          this.showActions = true;
-        } else {
-          this.$router.push(`/games/host/${game.hash}`);
-        }
+    fb.getUserGame(this.user.uuid).then((game) => {
+      if (game && game.hasFinished) {
+        this.$router.push(`/games/host/${game.hash}`);
       }
     });
   },
@@ -134,6 +156,20 @@ export default {
 label {
   font-size: 1.5rem;
   margin-bottom: 1rem;
+}
+
+.game-mode {
+  label {
+    display: block;
+  }
+}
+
+.description {
+  max-width: 460px;
+  margin: 0 auto 1.5rem;
+  b {
+    font-weight: 800;
+  }
 }
 
 .controls {
@@ -160,10 +196,6 @@ label {
     padding: 0;
     padding-bottom: 0.4rem;
   }
-}
-
-.black {
-  color: #000;
 }
 
 .copy-svg {

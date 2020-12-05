@@ -3,7 +3,7 @@
     <div v-if="show" @click="tryClose" class="backdrop"></div>
     <transition name="dialog">
       <dialog open v-if="show">
-        <header>
+        <header v-if="title">
           <slot name="header">
             <h2>{{ title }}</h2>
           </slot>
@@ -60,7 +60,7 @@ export default {
   height: 100vh;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.75);
-  z-index: 10;
+  z-index: 1001;
 }
 
 dialog {
@@ -68,7 +68,7 @@ dialog {
   top: 13vh;
   left: 10%;
   width: 80%;
-  z-index: 100;
+  z-index: 1002;
   border-radius: 1rem;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);

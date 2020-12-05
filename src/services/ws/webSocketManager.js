@@ -1,8 +1,11 @@
+import store from '@/store/index.js';
 import EventEmitter from 'events';
 
 class WebSocketManager extends EventEmitter {
   #reconnectInterval = 1000;
   #maxReconnectInterval = 3000;
+
+  static GAME_FINISH = 'GAME_FINISH';
 
   constructor() {
     super();
@@ -12,11 +15,13 @@ class WebSocketManager extends EventEmitter {
   }
 
   connect(gameId, uuid) {
-    this.ws = new WebSocket('wss://31ngo.com:8443');
+    this.ws = new WebSocket(
+      process.env.VUE_APP_WS_URL + ':' + process.env.VUE_APP_WS_PORT
+    );
 
     this.ws.onmessage = event => {
       const response = JSON.parse(event.data);
-      console.log(response);
+      this.handleWsMsg(response.message);
       this.emit('ws-msg', response);
     };
 
@@ -41,6 +46,50 @@ class WebSocketManager extends EventEmitter {
       this.emit('ws-error', error);
       this.ws.close();
     };
+  }
+
+  handleWsMsg(response) {
+    if (response && 'type' in response) {
+      switch (response.type) {
+        case 'adduser':
+          store.dispatch('gam/addUserInfo', {
+            uuid: response.uuid,
+            data: response.data
+          });
+          break;
+
+        case 'finish':
+          store.dispatch('gam/hasFinished', response.gameId);
+          break;
+
+        case 'bingo':
+        case 'line':
+          store.dispatch('gam/updateYell', {
+            type: response.type,
+            uuid: response.uuid
+          });
+          break;
+
+        case 'notwinner':
+          store.dispatch('gam/resetYell');
+          break;
+
+        case 'num':
+          store.dispatch('gam/addDrawnNumber', response.num);
+          break;
+
+        case 'winner':
+          store.dispatch('gam/setWinner', {
+            type: response.winType,
+            uuid: response.uuid
+          });
+          store.dispatch('gam/resetYell');
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 
   send(data) {
