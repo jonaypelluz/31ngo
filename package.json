@@ -12,7 +12,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "events": "^3.2.0",
-    "firebase": "^8.2.1",
+    "firebase": "^8.4.2",
     "node-sass": "^5.0.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.2",
