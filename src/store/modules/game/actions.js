@@ -17,7 +17,7 @@ export default {
     const defaultGame = getDefaultState();
     const gameData = {
       ...defaultGame.game,
-      ...data
+      ...data,
     };
     context.commit('updateGame', gameData);
   },
@@ -42,11 +42,11 @@ export default {
     const game = context.getters.getGame;
     const gameData = {
       ...game,
-      ...data
+      ...data,
     };
     context.commit('updateGame', gameData);
   },
   updateYell(context, data) {
     context.commit('updateYell', data);
-  }
+  },
 };

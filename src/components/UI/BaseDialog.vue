@@ -77,18 +77,22 @@ dialog {
   margin: 0;
   overflow: hidden;
   background-color: white;
+
   header {
     background-color: $third;
     color: white;
     width: 100%;
     padding: 1rem;
+
     h2 {
       margin: 0;
     }
   }
+
   section {
     padding: 1rem;
   }
+
   menu {
     padding: 1rem;
     display: flex;
@@ -102,12 +106,15 @@ dialog {
   opacity: 0;
   transform: scale(0.8);
 }
+
 .dialog-enter-active {
   transition: all 0.3s ease-out;
 }
+
 .dialog-leave-active {
   transition: all 0.3s ease-in;
 }
+
 .dialog-enter-to,
 .dialog-leave-from {
   opacity: 1;

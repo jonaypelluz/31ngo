@@ -37,15 +37,18 @@ export default {
   z-index: 101;
   border-left: 1px solid #000;
   transition: 0.5s ease-in-out;
+
   &.multiple {
     .slide-btn-wrapper {
       top: 7.2em;
     }
   }
+
   &.show {
     right: 0;
     z-index: 102;
   }
+
   .slide-btn-wrapper {
     cursor: pointer;
     position: absolute;
@@ -58,6 +61,7 @@ export default {
     border-radius: 1em 0 0 1em;
     background-color: $secondary;
     text-align: center;
+
     button {
       border: 1px solid #000;
       margin-top: 0.45em;
@@ -74,6 +78,7 @@ export default {
     width: 80%;
     min-width: 80%;
     right: -80%;
+
     .slide-btn-wrapper {
       top: 3em;
       left: -3.96em;

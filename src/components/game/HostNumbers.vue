@@ -48,13 +48,12 @@ export default {
     chunk(arr, size) {
       return arr.reduce(
         (acc, _, i) => (i % size ? acc : [...acc, arr.slice(i, i + size)]),
-        []
+        [],
       );
     },
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 .numbers-card {
@@ -63,14 +62,17 @@ export default {
 
 ul {
   list-style: none;
+
   li {
     text-align: center;
+
     div {
       font-size: 1.5rem;
       text-align: center;
       width: 2rem;
       margin: 0 0.5rem;
       display: inline-block;
+
       &.selected {
         font-size: 1.2rem;
         text-decoration: line-through;
@@ -88,10 +90,12 @@ h6 {
   ul li div {
     width: 0.45rem;
     font-size: 1rem;
+
     &.selected {
       font-size: 0.9rem;
     }
   }
+
   .numbers-card {
     padding: 1rem 2rem;
   }
@@ -102,6 +106,7 @@ h6 {
     width: 1.5rem;
     font-size: 1.1rem;
   }
+
   .numbers-card {
     padding: 1rem 2rem;
   }

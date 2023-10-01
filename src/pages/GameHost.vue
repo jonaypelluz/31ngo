@@ -1,14 +1,7 @@
 <template>
   <base-centre-container v-if="!isLoading">
-    <host-controls
-      v-if="!game.hasFinished"
-      :game="game"
-      :numbers="totalNumbers"
-      :number="drawnNumber"
-      :automode="automode"
-      @draw-number="drawNumber"
-      @game-has-finished="finishGame"
-    />
+    <host-controls v-if="!game.hasFinished" :game="game" :numbers="totalNumbers" :number="drawnNumber"
+      :automode="automode" @draw-number="drawNumber" @game-has-finished="finishGame" />
     <div v-else>
       <h3>¡La partida ha finalizado!</h3>
       <div v-if="winner">
@@ -30,20 +23,11 @@
           Nombre del jugador: <b>{{ game.players[yell.uuid].name }}</b>
         </p>
         <div class="user-bingo-card-wrapper" v-if="yellCard">
-          <div
-            class="user-bingo-card"
-            v-for="(row, idx) in yellCard"
-            :key="idx"
-          >
-            <div
-              class="user-number"
-              :class="{
-                empty: num === 0,
-                selected: game.drawnNumbers.includes(num),
-              }"
-              v-for="num in row"
-              :key="num"
-            >
+          <div class="user-bingo-card" v-for="(row, idx) in yellCard" :key="idx">
+            <div class="user-number" :class="{
+              empty: num === 0,
+              selected: game.drawnNumbers.includes(num),
+            }" v-for="num in row" :key="num">
               {{ num === 0 ? '' : num }}
             </div>
           </div>
@@ -63,9 +47,9 @@
 
 <script>
 import Constants from '@/constants.js';
-import HostControls from '@/components/game/HostControls';
-import HostInfo from '@/components/game/HostInfo';
-import HostNumbers from '@/components/game/HostNumbers';
+import HostControls from '@/components/game/HostControls.vue';
+import HostInfo from '@/components/game/HostInfo.vue';
+import HostNumbers from '@/components/game/HostNumbers.vue';
 import fb from '@/services/firebase/fb.js';
 import { mapState } from 'vuex';
 import { wsManager } from '@/services/ws/webSocketManager';
@@ -106,9 +90,8 @@ export default {
     },
     yellTitle() {
       return this.yell
-        ? `¡Comprobar resultados de ${
-            this.yell.type !== 'line' ? 'bingo' : 'línea'
-          }!`
+        ? `¡Comprobar resultados de ${this.yell.type !== 'line' ? 'bingo' : 'línea'
+        }!`
         : '';
     },
     winner() {
@@ -229,14 +212,17 @@ export default {
 b {
   font-weight: 800;
 }
+
 .user-bingo-card-wrapper {
   border: 1px solid #000;
   border-radius: 1rem;
+
   .user-bingo-card {
     display: grid;
     grid-template-columns: repeat(9, 10.2%);
     grid-gap: 1%;
     padding: 1%;
+
     .user-number {
       font-size: 1.8rem;
       color: #000;
@@ -245,9 +231,11 @@ b {
       text-align: center;
       border-radius: 15%;
       background-color: #fff;
+
       &.selected {
         background-color: $fifth;
       }
+
       &.empty {
         background-color: #333333;
         cursor: initial;

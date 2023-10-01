@@ -23,7 +23,7 @@ export default {
     '50-59',
     '60-69',
     '70-79',
-    '80-90'
-  ]
+    '80-90',
+  ],
   //End of Bingo Card creation
 };

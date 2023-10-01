@@ -1,14 +1,16 @@
 import { createApp } from 'vue';
-import App from './App.vue';
-import TheHeader from './components/layout/TheHeader';
-import BaseButton from './components/UI/BaseButton';
-import BaseCard from './components/UI/BaseCard';
-import BaseCentreContainer from './components/UI/BaseCentreContainer';
-import BaseDialog from './components/UI/BaseDialog';
-import BaseSlide from './components/UI/BaseSlide';
-import BaseSpinner from './components/UI/BaseSpinner';
-import router from './router.js';
-import store from './store/index.js';
+import App from '@/App.vue';
+
+import TheHeader from '@/components/layout/TheHeader.vue';
+import BaseButton from '@/components/UI/BaseButton.vue';
+import BaseCard from '@/components/UI/BaseCard.vue';
+import BaseCentreContainer from '@/components/UI/BaseCentreContainer.vue';
+import BaseDialog from '@/components/UI/BaseDialog.vue';
+import BaseSlide from '@/components/UI/BaseSlide.vue';
+import BaseSpinner from '@/components/UI/BaseSpinner.vue';
+
+import router from '@/router.js';
+import store from '@/store/index.js';
 
 const app = createApp(App);
 

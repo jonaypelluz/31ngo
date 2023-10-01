@@ -3,13 +3,13 @@ import gameModule from './modules/game/game.js';
 
 const store = createStore({
   modules: {
-    gam: gameModule
+    gam: gameModule,
   },
 
   state() {
     return {
       user: null,
-      token: null
+      token: null,
     };
   },
 
@@ -19,7 +19,7 @@ const store = createStore({
     },
     addUserToken(state, payload) {
       state.token = payload;
-    }
+    },
   },
 
   actions: {
@@ -36,7 +36,7 @@ const store = createStore({
     },
     setUserToken(context, token) {
       context.commit('addUserToken', token);
-    }
+    },
   },
 
   getters: {
@@ -45,8 +45,8 @@ const store = createStore({
     },
     getUserToken(state) {
       return state.token;
-    }
-  }
+    },
+  },
 });
 
 export default store;

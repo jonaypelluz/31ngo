@@ -105,7 +105,7 @@ class BingoCard {
 
     return {
       matrix: matrix,
-      numbers: numbers
+      numbers: numbers,
     };
   }
 

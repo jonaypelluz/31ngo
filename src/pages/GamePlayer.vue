@@ -1,23 +1,11 @@
 <template>
-  <player-actions
-    @yell-action="yellAction"
-    @mark-numbers="markNumbers"
-    :game="game"
-    :drawn-number="drawnNumber"
-    :show-full-house-btn="showFullHouseBtn"
-    :show-line-btn="showLineBtn"
-    :winner="winner"
-  />
+  <player-actions @yell-action="yellAction" @mark-numbers="markNumbers" :game="game" :drawn-number="drawnNumber"
+    :show-full-house-btn="showFullHouseBtn" :show-line-btn="showLineBtn" :winner="winner" />
   <base-centre-container v-if="!isLoading">
     <player-card :game="game" @add-bingo-card="addName" />
     <base-dialog :show="showNameForm">
       Añade un nombre de jugador
-      <input
-        type="text"
-        placeholder="Nombre"
-        class="form-control"
-        v-model="userName"
-      />
+      <input type="text" placeholder="Nombre" class="form-control" v-model="userName" />
       <span class="text-danger" v-if="showNameError">
         Tienes que añadir un nombre
       </span>
@@ -38,8 +26,8 @@
 </template>
 
 <script>
-import PlayerActions from '@/components/game/PlayerActions';
-import PlayerCard from '@/components/game/PlayerCard';
+import PlayerActions from '@/components/game/PlayerActions.vue';
+import PlayerCard from '@/components/game/PlayerCard.vue';
 import fb from '@/services/firebase/fb.js';
 import { wsManager } from '@/services/ws/webSocketManager';
 import { mapState } from 'vuex';
@@ -88,17 +76,15 @@ export default {
         winner =
           this.game.winners.bingo === this.user.uuid
             ? '¡Has ganado!'
-            : `El ganador es ${
-                this.game.players[this.game.winners.bingo].name
-              }`;
+            : `El ganador es ${this.game.players[this.game.winners.bingo].name
+            }`;
       }
       return winner;
     },
     yellTitle() {
       return this.yell
-        ? `¡Han cantado ${
-            this.yell.type !== 'line' ? 'bingo' : 'línea'
-          }!... se está revisando...`
+        ? `¡Han cantado ${this.yell.type !== 'line' ? 'bingo' : 'línea'
+        }!... se está revisando...`
         : '';
     },
   },

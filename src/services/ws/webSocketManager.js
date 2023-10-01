@@ -16,10 +16,10 @@ class WebSocketManager extends EventEmitter {
 
   connect(gameId, uuid) {
     this.ws = new WebSocket(
-      process.env.VUE_APP_WS_URL + ':' + process.env.VUE_APP_WS_PORT
+      process.env.VUE_APP_WS_URL + ':' + process.env.VUE_APP_WS_PORT,
     );
 
-    this.ws.onmessage = event => {
+    this.ws.onmessage = (event) => {
       const response = JSON.parse(event.data);
       this.handleWsMsg(response.message);
       this.emit('ws-msg', response);
@@ -29,7 +29,7 @@ class WebSocketManager extends EventEmitter {
       this.send({ gameId, type: 'connect', uuid });
     };
 
-    this.ws.onclose = event => {
+    this.ws.onclose = (event) => {
       if (event) {
         if (event.code !== 1000) {
           setTimeout(() => {
@@ -42,7 +42,7 @@ class WebSocketManager extends EventEmitter {
       }
     };
 
-    this.ws.onerror = error => {
+    this.ws.onerror = (error) => {
       this.emit('ws-error', error);
       this.ws.close();
     };
@@ -54,7 +54,7 @@ class WebSocketManager extends EventEmitter {
         case 'adduser':
           store.dispatch('gam/addUserInfo', {
             uuid: response.uuid,
-            data: response.data
+            data: response.data,
           });
           break;
 
@@ -66,7 +66,7 @@ class WebSocketManager extends EventEmitter {
         case 'line':
           store.dispatch('gam/updateYell', {
             type: response.type,
-            uuid: response.uuid
+            uuid: response.uuid,
           });
           break;
 
@@ -81,7 +81,7 @@ class WebSocketManager extends EventEmitter {
         case 'winner':
           store.dispatch('gam/setWinner', {
             type: response.winType,
-            uuid: response.uuid
+            uuid: response.uuid,
           });
           store.dispatch('gam/resetYell');
           break;

@@ -116,6 +116,7 @@ export default {
   grid-template-columns: repeat(9, 10.2%);
   grid-gap: 1%;
   padding: 1%;
+
   .number {
     font-size: 5rem;
     color: #000;
@@ -125,9 +126,11 @@ export default {
     border-radius: 15%;
     background-color: #fff;
     cursor: pointer;
+
     &.selected {
       background-color: $fifth;
     }
+
     &.empty {
       background-color: #333333;
       cursor: initial;
@@ -162,16 +165,19 @@ export default {
   .wrapper .number {
     font-size: 1.6rem;
   }
+
   .controls {
     .assign-card {
       display: block;
       margin: 0 auto;
     }
+
     .generate-card {
       display: block;
       margin: 1.5rem auto;
     }
   }
+
   .bingo-card {
     max-width: 90%;
   }
@@ -181,6 +187,7 @@ export default {
   .wrapper .number {
     font-size: 2.8rem;
   }
+
   .bingo-card {
     max-width: 90%;
   }
@@ -190,6 +197,7 @@ export default {
   .wrapper .number {
     font-size: 3.2rem;
   }
+
   .bingo-card {
     max-width: 90%;
   }
@@ -199,6 +207,7 @@ export default {
   .wrapper .number {
     font-size: 4rem;
   }
+
   .bingo-card {
     max-width: 90%;
   }

@@ -96,14 +96,17 @@ export default {
 .game-info {
   h3 {
     margin-bottom: 2rem;
+
     span {
       font-weight: 800;
     }
   }
+
   h3,
   h4 {
     font-size: 1.3rem;
   }
+
   .game-tag {
     font-size: 1.3rem;
   }
@@ -111,6 +114,7 @@ export default {
   .game-codes {
     width: 80%;
     margin: 0 auto;
+
     .player-codes {
       width: 100%;
       height: 90px;
@@ -118,34 +122,43 @@ export default {
       margin: 0;
       padding: 0;
       list-style: none;
+
       &::-webkit-scrollbar {
         -webkit-appearance: none;
+
         &:vertical {
           width: 12px;
         }
+
         &:horizontal {
           height: 12px;
         }
       }
+
       &::-webkit-scrollbar-thumb {
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: 10px;
         border: 2px solid #ffffff;
       }
+
       &::-webkit-scrollbar-track {
         border-radius: 10px;
         background-color: #ffffff;
       }
+
       li {
         font-size: 1.2rem;
         border-bottom: 1px dashed #fff;
         padding: 2px 0;
+
         &.selected {
           text-decoration: line-through;
           color: #000;
         }
+
         span {
           display: none;
+
           &.show {
             display: inline-block;
           }

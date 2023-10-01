@@ -167,6 +167,7 @@ label {
 .description {
   max-width: 460px;
   margin: 0 auto 1.5rem;
+
   b {
     font-weight: 800;
   }
@@ -174,6 +175,7 @@ label {
 
 .controls {
   margin-bottom: 1.2rem;
+
   span {
     width: 7rem;
     height: 5rem;
@@ -185,6 +187,7 @@ label {
     background: transparent;
     border: 0 none;
   }
+
   button {
     position: relative;
     top: -10px;

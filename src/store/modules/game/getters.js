@@ -19,5 +19,5 @@ export default {
   },
   getWinners(state) {
     return state.game.winners ?? [];
-  }
+  },
 };

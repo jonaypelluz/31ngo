@@ -64,6 +64,7 @@ export default {
 .description {
   max-width: 400px;
   margin: 0 auto 1.5rem;
+
   b {
     font-weight: 800;
   }
@@ -73,6 +74,7 @@ export default {
   .logo {
     max-width: 5em;
   }
+
   .description {
     max-width: 80%;
   }

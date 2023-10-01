@@ -11,19 +11,19 @@ export const getDefaultState = () => {
       drawnNumbers: [],
       winners: [],
       players: {},
-      maxPlayers: null
+      maxPlayers: null,
     },
     yell: {
       type: null,
-      uuid: null
-    }
+      uuid: null,
+    },
   };
 };
 
 export const getDefaultYellState = () => {
   return {
     type: null,
-    uuid: null
+    uuid: null,
   };
 };
 

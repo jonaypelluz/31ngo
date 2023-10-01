@@ -56,13 +56,13 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
 @import '@/scss/_variables.scss';
 
 .player-drawn-number {
   position: relative;
   text-align: center;
+
   .drawn-number {
     color: #000;
     background-color: $secondary;
@@ -78,10 +78,12 @@ export default {
     border: 1px solid #000;
     border-top: 0 none;
     border-left: 0 none;
+
     span {
       position: relative;
       top: 5px;
     }
+
     .main-logo {
       position: absolute;
       top: 3px;
@@ -90,9 +92,11 @@ export default {
       z-index: 1;
     }
   }
+
   .game-finished {
     font-size: 1rem;
   }
+
   .bingo-btn,
   .line-btn,
   .mark-btn {
@@ -106,6 +110,7 @@ export default {
     border-top: 0 none;
     border-radius: 0 0 1rem 1rem;
     top: 0;
+
     &:hover,
     &:focus,
     &:active {
@@ -118,13 +123,16 @@ export default {
   .line-btn {
     left: 30%;
     visibility: hidden;
+
     &.show {
       visibility: visible;
     }
   }
+
   .bingo-btn {
     left: 45%;
   }
+
   .mark-btn {
     width: auto;
     right: 15%;
@@ -141,10 +149,12 @@ export default {
   .player-drawn-number {
     .drawn-number {
       font-size: 2.5rem;
+
       span {
         top: 14px;
       }
     }
+
     .line-btn,
     .bingo-btn,
     .mark-btn {
@@ -152,12 +162,15 @@ export default {
       padding: 5px;
       width: auto;
     }
+
     .line-btn {
       left: 27%;
     }
+
     .bingo-btn {
       left: 40%;
     }
+
     .mark-btn {
       right: 1%;
     }
@@ -168,16 +181,20 @@ export default {
   .player-drawn-number {
     .drawn-number {
       font-size: 3rem;
+
       span {
         top: 14px;
       }
     }
+
     .line-btn {
       left: 20%;
     }
+
     .bingo-btn {
       left: 38%;
     }
+
     .mark-btn {
       right: 8%;
     }
@@ -188,10 +205,12 @@ export default {
   .player-drawn-number {
     .drawn-number {
       font-size: 3rem;
+
       span {
         top: 14px;
       }
     }
+
     .mark-btn {
       right: 8%;
     }
@@ -202,6 +221,7 @@ export default {
   .player-drawn-number {
     .drawn-number {
       font-size: 3.6rem;
+
       span {
         top: 10px;
       }

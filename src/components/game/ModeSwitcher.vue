@@ -55,10 +55,13 @@ export default {
   transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   vertical-align: middle;
   cursor: pointer;
+
   &:active::before {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28),
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.28),
       0 0 0 20px rgba(128, 128, 128, 0.1);
   }
+
   &::before {
     content: '';
     position: absolute;
@@ -68,7 +71,8 @@ export default {
     height: 22px;
     background: #fafafa;
     border-radius: 50%;
-    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    transition:
+      left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
       background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
       box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -77,11 +81,15 @@ export default {
 input:checked + .switch {
   background: $primary;
 }
+
 input:checked + .switch::before {
   left: 27px;
   background: #fff;
 }
+
 input:checked + .switch:active::before {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 20px rgba(0, 150, 136, 0.2);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.28),
+    0 0 0 20px rgba(0, 150, 136, 0.2);
 }
 </style>

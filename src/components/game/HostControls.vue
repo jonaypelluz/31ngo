@@ -134,11 +134,13 @@ export default {
 .host-card {
   max-width: 50%;
 }
+
 .drawn-number {
   font-size: 10rem;
   line-height: 1;
   margin-bottom: 3rem;
 }
+
 .finish-btn {
   font-size: 1rem;
   margin-right: 1.5rem;
@@ -149,10 +151,12 @@ export default {
     max-width: 80%;
     margin-top: 1.4rem;
   }
+
   .drawn-number {
     font-size: 8rem;
     margin-bottom: 1rem;
   }
+
   .controls {
     .finish-btn {
       margin-right: 0;
@@ -166,6 +170,7 @@ export default {
     max-width: 80%;
     margin-top: 1.4rem;
   }
+
   .drawn-number {
     font-size: 8rem;
     margin-bottom: 1rem;
@@ -176,6 +181,7 @@ export default {
   .host-card {
     max-width: 96%;
   }
+
   .drawn-number {
     font-size: 8rem;
     margin-bottom: 1rem;

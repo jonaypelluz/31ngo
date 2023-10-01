@@ -1,55 +1,66 @@
 import { auth } from '@/services/firebase/firebase';
-import { signInAnonymously } from "firebase/auth";
 import { createRouter, createWebHistory } from 'vue-router';
-import GameHost from './pages/GameHost.vue';
-import GamePlayer from './pages/GamePlayer.vue';
-import Home from './pages/Home.vue';
-import Host from './pages/Host.vue';
-import NotFound from './pages/NotFound.vue';
-import Player from './pages/Player.vue';
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', component: Home, meta: { hideHeader: true } },
-    { path: '/host', name: 'host', component: Host, meta: { needsUuid: true } },
     {
-      path: '/player',
+      name: 'home',
+      path: '/',
+      component: () => import('../pages/Home.vue'),
+      meta: { hideHeader: true },
+    },
+    {
+      name: 'host',
+      path: '/host',
+      component: () => import('../pages/Host.vue'),
+      meta: { needsUuid: true },
+    },
+    {
       name: 'player',
-      component: Player,
+      path: '/player',
+      component: () => import('../pages/Player.vue'),
       meta: { needsUuid: true },
     },
     {
-      path: '/games/player/:id',
       name: 'gameplayer',
-      component: GamePlayer,
+      path: '/games/player/:id',
+      component: () => import('../pages/GamePlayer.vue'),
       props: true,
       meta: { needsUuid: true },
     },
     {
-      path: '/games/host/:id',
       name: 'gamehost',
-      component: GameHost,
+      path: '/games/host/:id',
+      component: () => import('../pages/GameHost.vue'),
       props: true,
       meta: { needsUuid: true },
     },
-    { path: '/game-not-found', component: NotFound, meta: { type: 'game' } },
-    { path: '/:notFound(.*)', component: NotFound },
+    {
+      path: '/game-not-found',
+      component: () => import('../pages/NotFound.vue'),
+      meta: { type: 'game' },
+    },
+    {
+      path: '/:notFound(.*)',
+      component: () => import('../pages/NotFound.vue'),
+    },
   ],
   scrollBehavior(_, _2, savedPosition) {
     return savedPosition
       ? savedPosition
       : {
-        left: 0,
-        top: 0,
-      };
+          left: 0,
+          top: 0,
+        };
   },
 });
 
 router.beforeEach(async (to, from, next) => {
+  //firebase
   let userToken = sessionStorage.getItem('userToken');
   if (!userToken) {
-    await signInAnonymously(auth);
+    await auth.signInAnonymously();
   }
   auth.onAuthStateChanged((user) => {
     if (!user) {
@@ -62,6 +73,7 @@ router.beforeEach(async (to, from, next) => {
     }
   });
 
+  //uuid
   if (to.meta.needsUuid) {
     const uuid = sessionStorage.getItem('user');
     if (!uuid) {
