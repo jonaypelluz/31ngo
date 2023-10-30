@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: app
+    build:
+      context: ../../
+      dockerfile: ops/docker/app/Dockerfile
+    working_dir: /app
+    volumes:
+      - ../../:/app
+      - /app/node_modules
+    ports:
+      - '8080:8080'
+    networks:
+      default:
+        aliases:
+          - 31ngo.local
+
+volumes: {
+  node_modules
+}
