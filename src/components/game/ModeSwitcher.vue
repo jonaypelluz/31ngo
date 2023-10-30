@@ -1,11 +1,11 @@
 <template>
   <div class="switch-btn">
     <input
+      id="automatic"
       type="checkbox"
       hidden="hidden"
-      id="automatic"
-      @change="setBingoMode"
       :checked="automatic"
+      @change="setBingoMode"
     />
     <label class="switch" for="automatic"></label>
     <label class="switch-label">
@@ -18,6 +18,7 @@
 <script>
 export default {
   props: ['automatic', 'showTimer', 'timer'],
+  emits: ['set-bingo-mode'],
   computed: {
     automaticLabel() {
       return !this.automatic ? 'Manual' : 'Automático';
@@ -26,7 +27,6 @@ export default {
       return this.automatic && this.showTimer;
     },
   },
-  emits: ['set-bingo-mode'],
   methods: {
     setBingoMode() {
       this.$emit('set-bingo-mode', !this.automatic);

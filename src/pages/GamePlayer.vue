@@ -1,19 +1,12 @@
 <template>
-  <player-actions
-    @yell-action="yellAction"
-    @mark-numbers="markNumbers"
-    :game="game"
-    :drawn-number="drawnNumber"
-    :show-full-house-btn="showFullHouseBtn"
-    :show-line-btn="showLineBtn"
-    :winner="winner"
-  />
+  <player-actions :game="game" :drawn-number="drawnNumber" :show-full-house-btn="showFullHouseBtn"
+    :show-line-btn="showLineBtn" :winner="winner" @yell-action="yellAction" @mark-numbers="markNumbers" />
   <base-centre-container v-if="!isLoading">
     <player-card :game="game" @add-bingo-card="addName" />
     <base-dialog :show="showNameForm">
       Añade un nombre de jugador
-      <input type="text" placeholder="Nombre" class="form-control" v-model="userName" />
-      <span class="text-danger" v-if="showNameError"> Tienes que añadir un nombre </span>
+      <input v-model="userName" type="text" placeholder="Nombre" class="form-control" />
+      <span v-if="showNameError" class="text-danger"> Tienes que añadir un nombre </span>
       <template #actions>
         <base-button @click="addBingoCard">Enviar</base-button>
       </template>
@@ -33,7 +26,6 @@
 <script>
 import PlayerActions from '@/components/game/PlayerActions.vue';
 import PlayerCard from '@/components/game/PlayerCard.vue';
-import fb from '@/services/firebase/fb.js';
 import { wsManager } from '@/services/ws/webSocketManager';
 import { mapState } from 'vuex';
 
@@ -91,6 +83,22 @@ export default {
         : '';
     },
   },
+  async mounted() {
+    this.isLoading = true;
+
+    // Get game
+    console.log('GET THE GAME');
+    // const theGame = await fb.getGame(this.id);
+    const theGame = [];
+    this.$store.dispatch('gam/updateGame', theGame);
+    this.isLoading = false;
+
+    if (!this.game.hash || this.game.host === this.user.uuid) {
+      this.$router.replace('/game-not-found');
+    }
+    this.ws = wsManager;
+    this.ws.connect(this.id, this.user.uuid);
+  },
   methods: {
     addName(data) {
       this.showNameForm = true;
@@ -107,7 +115,10 @@ export default {
         this.showNameError = false;
         this.showNameForm = false;
         this.$store.dispatch('gam/addUserInfo', data);
-        await fb.addUserInfo(this.id, this.user.uuid, data);
+
+        console.log('ADD USER INFO');
+        // await fb.addUserInfo(this.id, this.user.uuid, data);
+
         this.sendWsMsg({
           type: 'adduser',
           data: data,
@@ -141,20 +152,6 @@ export default {
         uuid: this.user.uuid,
       });
     },
-  },
-  async mounted() {
-    this.isLoading = true;
-
-    // Get game
-    const theGame = await fb.getGame(this.id);
-    this.$store.dispatch('gam/updateGame', theGame);
-    this.isLoading = false;
-
-    if (!this.game.hash || this.game.host === this.user.uuid) {
-      this.$router.replace('/game-not-found');
-    }
-    this.ws = wsManager;
-    this.ws.connect(this.id, this.user.uuid);
   },
 };
 </script>

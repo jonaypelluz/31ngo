@@ -1,5 +1,3 @@
-import { auth } from '@/services/firebase/firebase';
-import { signInAnonymously } from 'firebase/auth';
 import { createRouter, createWebHistory } from 'vue-router';
 import GameHost from './pages/GameHost.vue';
 import GamePlayer from './pages/GamePlayer.vue';
@@ -40,36 +38,10 @@ const router = createRouter({
     return savedPosition
       ? savedPosition
       : {
-          left: 0,
-          top: 0,
-        };
+        left: 0,
+        top: 0,
+      };
   },
-});
-
-router.beforeEach(async (to, from, next) => {
-  let userToken = sessionStorage.getItem('userToken');
-  if (!userToken) {
-    await signInAnonymously(auth);
-  }
-  auth.onAuthStateChanged((user) => {
-    if (!user) {
-      //TODO: fix 400 error when account is deleted from firebase
-      sessionStorage.removeItem('userToken');
-    } else {
-      user.getIdToken().then((token) => {
-        sessionStorage.setItem('userToken', token);
-      });
-    }
-  });
-
-  if (to.meta.needsUuid) {
-    const uuid = sessionStorage.getItem('user');
-    if (!uuid) {
-      next('/');
-    }
-  }
-
-  next();
 });
 
 export default router;

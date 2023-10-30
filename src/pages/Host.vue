@@ -3,7 +3,7 @@
     <div class="form-wrapper text-center">
       <h2 class="mb-2">Anfitrión</h2>
       <div v-if="showActions">
-        <div class="game-mode" v-if="!mode">
+        <div v-if="!mode" class="game-mode">
           <label>Elige el modo de juego</label>
           <p class="description">
             En el modo de juego <b>PÚBLICO</b> podrán participar los jugadores que quieran, en el
@@ -19,12 +19,12 @@
           <div class="controls">
             <base-button v-if="!game" mode="flat" @click="decreasePlayers"> - </base-button>
             <span class="form-control">{{ players }}</span>
-            <base-button v-if="!game" mode="flat" @click="increasePlayers" class="pb-0">
+            <base-button v-if="!game" mode="flat" class="pb-0" @click="increasePlayers">
               +
             </base-button>
           </div>
         </div>
-        <base-button mode="animation" v-if="showCreateBtn" @click="createGame">
+        <base-button v-if="showCreateBtn" mode="animation" @click="createGame">
           Crear partida
         </base-button>
       </div>
@@ -52,7 +52,6 @@
 <script>
 import Constants from '@/constants.js';
 import helpers from '@/utils/helpers.js';
-import fb from '@/services/firebase/fb.js';
 import { mapState } from 'vuex';
 
 export default {
@@ -79,6 +78,14 @@ export default {
     hostUrl() {
       return `/games/host/${this.game.hash}`;
     },
+  },
+  created() {
+    console.log('GET THE USER');
+    // fb.getUserGame(this.user.uuid).then((game) => {
+    //   if (game && game.hasFinished) {
+    //     this.$router.push(`/games/host/${game.hash}`);
+    //   }
+    // });
   },
   methods: {
     chooseGameMode(mode) {
@@ -118,16 +125,10 @@ export default {
       };
       this.$store.dispatch('gam/createGame', theGame);
       const gameData = this.$store.getters['gam/getGame'];
-      await fb.createGame(gameData);
+      console.log('CREATE THE GAME', gameData);
+      // await fb.createGame(gameData);
       this.game = theGame;
     },
-  },
-  created() {
-    fb.getUserGame(this.user.uuid).then((game) => {
-      if (game && game.hasFinished) {
-        this.$router.push(`/games/host/${game.hash}`);
-      }
-    });
   },
 };
 </script>

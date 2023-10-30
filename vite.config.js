@@ -6,6 +6,13 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 
 export default defineConfig({
   plugins: [vue(), vueJsx()],
+  server: {
+    host: '0.0.0.0',
+    port: 8080,
+    watch: {
+      usePolling: true
+    }
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

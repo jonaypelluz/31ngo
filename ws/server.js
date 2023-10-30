@@ -1,27 +1,16 @@
 require('dotenv').config();
+
 const https = process.env.APP_ENV === 'prod' ? require('https') : require('http');
 const express = require('express');
-const fs = require('fs');
 const WebSocket = require('ws');
 
 const app = express();
-let server;
-
-if (process.env.APP_ENV === 'prod') {
-  const key = fs.readFileSync('/home/pm2user/wss/certs/privkey.pem');
-  const cert = fs.readFileSync('/home/pm2user/wss/certs/fullchain.pem');
-  server = https.createServer({ key, cert }, app);
-} else {
-  server = https.createServer(app);
-}
-
+const server = https.createServer(app);
 const wss = new WebSocket.Server({ server });
-
 const serverPort = process.env.WS_PORT;
 
 let games = [];
 
-//when a websocket connection is established
 wss.on('connection', (wsClient) => {
   wsClient.send('{ "connection" : "ok"}');
 
@@ -64,16 +53,6 @@ wss.on('connection', (wsClient) => {
     }
   }
 
-  //   function _sendMessage(response, message) {
-  //     if (
-  //       games[response.gameId] &&
-  //       games[response.gameId].clients[response.uuid]
-  //     ) {
-  //       const client = games[response.gameId].clients[response.uuid];
-  //       client.send(`{ "message" : ${message} }`);
-  //     }
-  //   }
-
   function _sendMessages(response, message) {
     for (const idx in games[response.gameId].clients) {
       const client = games[response.gameId].clients[idx];
@@ -102,7 +81,6 @@ wss.on('connection', (wsClient) => {
   }
 });
 
-//start the web server
 server.listen(serverPort, () => {
   console.log(`Websocket server started on port ` + serverPort);
 });

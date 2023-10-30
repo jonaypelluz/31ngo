@@ -1,10 +1,10 @@
 <template>
   <base-card class="host-card">
     <mode-switcher
-      @set-bingo-mode="setBingoMode"
       :timer="timer"
-      :showTimer="showTimer"
+      :show-timer="showTimer"
       :automatic="automatic"
+      @set-bingo-mode="setBingoMode"
     />
     <div class="drawn-number">
       <span>{{ shownNumber }}</span>
@@ -13,10 +13,10 @@
       <base-button v-if="number" class="finish-btn" mode="flat" @click="finishGame">
         Final de la partida
       </base-button>
-      <base-button class="action-btn" @click="drawTheNumber" v-if="showStartBtn">
+      <base-button v-if="showStartBtn" class="action-btn" @click="drawTheNumber">
         {{ btnText }}
       </base-button>
-      <p class="black" v-else>Mínimo tiene que haber un jugador online para poder empezar</p>
+      <p v-else class="black">Mínimo tiene que haber un jugador online para poder empezar</p>
     </div>
   </base-card>
 </template>
@@ -54,6 +54,13 @@ export default {
     },
     btnText() {
       return this.number ? 'Nuevo número' : 'Empezar';
+    },
+  },
+  watch: {
+    automode(val) {
+      if (val && val === 'stop') {
+        this.stopAutomaticMode();
+      }
     },
   },
   methods: {
@@ -99,13 +106,6 @@ export default {
       this.stopAutomaticMode();
       e.target.blur();
       this.$emit('draw-number');
-    },
-  },
-  watch: {
-    automode(val) {
-      if (val && val === 'stop') {
-        this.stopAutomaticMode();
-      }
     },
   },
 };

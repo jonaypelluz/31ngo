@@ -14,23 +14,18 @@
         </div>
       </div>
     </div>
-    <div class="player-names mb-3" v-if="showPlayerNames">
+    <div v-if="showPlayerNames" class="player-names mb-3">
       <h4 class="mt-3">Nombres de los jugadores</h4>
       <span v-for="(player, idx) in game.players" :key="idx">
-        {{ player.name }}{{ addComa(this.game.players.length, idx) }}
+        {{ player.name }}{{ addComa(game.players.length, idx) }}
       </span>
     </div>
-    <div class="game-codes mb-3" v-if="showPlayersCodes">
+    <div v-if="showPlayersCodes" class="game-codes mb-3">
       <h4 class="mt-3">Códigos de jugadores</h4>
       <ul class="player-codes">
-        <li
-          v-for="code in game.codes"
-          :key="code"
-          :class="{
-            selected: game.usedCodes.includes(code),
-          }"
-          @click="copyHash($event, code)"
-        >
+        <li v-for="code in game.codes" :key="code" :class="{
+          selected: game.usedCodes.includes(code),
+        }" @click="copyHash($event, code)">
           {{ code }} <span class="black">!Copiado!</span>
         </li>
       </ul>
@@ -40,7 +35,6 @@
 </template>
 
 <script>
-import fb from '@/services/firebase/fb.js';
 import Constants from '@/constants.js';
 
 export default {
@@ -79,11 +73,12 @@ export default {
       e.target.querySelector('.black').classList.toggle('show');
     },
     deleteGame() {
-      fb.deleteGame(this.game.hash, this.game.host).then((deleted) => {
-        if (deleted) {
-          this.$router.push('/');
-        }
-      });
+      console.log('DELETE GAME');
+      // fb.deleteGame(this.game.hash, this.game.host).then((deleted) => {
+      //   if (deleted) {
+      //     this.$router.push('/');
+      //   }
+      // });
     },
   },
 };

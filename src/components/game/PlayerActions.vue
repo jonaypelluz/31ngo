@@ -1,12 +1,12 @@
 <template>
   <div class="player-drawn-number">
-    <span class="drawn-number" v-if="drawnNumber">
+    <span v-if="drawnNumber" class="drawn-number">
       <router-link to="/">
         <img class="main-logo" src="@/assets/logo-white.svg" alt="31ngo" />
       </router-link>
       <span>{{ drawnNumber }}</span>
     </span>
-    <span class="game-finished mr-3" v-if="game.hasFinished">
+    <span v-if="game.hasFinished" class="game-finished mr-3">
       ¡El juego ha finalizado!
       {{ winner }}
     </span>
@@ -14,7 +14,7 @@
       <base-button class="line-btn" :class="{ show: showLineBtn }" @click="yell($event, 'line')">
         ¡Línea!
       </base-button>
-      <base-button class="bingo-btn ml-3" v-if="showFullHouseBtn" @click="yell($event, 'bingo')">
+      <base-button v-if="showFullHouseBtn" class="bingo-btn ml-3" @click="yell($event, 'bingo')">
         ¡Bingo!
       </base-button>
       <base-button v-if="drawnNumber" class="mark-btn" @click="markNums">

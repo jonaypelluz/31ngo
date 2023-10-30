@@ -14,13 +14,13 @@ import store from '@/store/index.js';
 
 const app = createApp(App);
 
-app.component('the-header', TheHeader);
-app.component('base-button', BaseButton);
-app.component('base-dialog', BaseDialog);
-app.component('base-card', BaseCard);
-app.component('base-slide', BaseSlide);
-app.component('base-spinner', BaseSpinner);
-app.component('base-centre-container', BaseCentreContainer);
+app.component('TheHeader', TheHeader);
+app.component('BaseButton', BaseButton);
+app.component('BaseDialog', BaseDialog);
+app.component('BaseCard', BaseCard);
+app.component('BaseSlide', BaseSlide);
+app.component('BaseSpinner', BaseSpinner);
+app.component('BaseCentreContainer', BaseCentreContainer);
 
 app.use(store);
 app.use(router);

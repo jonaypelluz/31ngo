@@ -13,7 +13,6 @@
 
 <script>
 import helpers from '@/utils/helpers.js';
-import fb from '@/services/firebase/fb.js';
 
 export default {
   data() {
@@ -36,17 +35,18 @@ export default {
       const uuid = helpers.uuidv4();
       this.$store.dispatch('setUser', { uuid: uuid });
     } else {
-      fb.getUserGame(uuid.uuid).then((game) => {
-        if (!game) {
-          this.showActions = true;
-        } else {
-          if (game.hasFinished) {
-            this.showActions = true;
-          } else {
-            this.$router.push(`/games/host/${game.hash}`);
-          }
-        }
-      });
+      console.log('GET USER GAME');
+      // fb.getUserGame(uuid.uuid).then((game) => {
+      //   if (!game) {
+      //     this.showActions = true;
+      //   } else {
+      //     if (game.hasFinished) {
+      //       this.showActions = true;
+      //     } else {
+      //       this.$router.push(`/games/host/${game.hash}`);
+      //     }
+      //   }
+      // });
     }
   },
 };

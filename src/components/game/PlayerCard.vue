@@ -1,21 +1,21 @@
 <template>
   <base-spinner v-if="isLoading"></base-spinner>
-  <base-card class="bingo-card" v-else>
-    <div class="ticket" v-if="bingoCard && bingoCard.length > 0">
-      <div class="wrapper" v-for="(row, idx) in bingoCard" :key="idx">
+  <base-card v-else class="bingo-card">
+    <div v-if="bingoCard && bingoCard.length > 0" class="ticket">
+      <div v-for="(row, idx) in bingoCard" :key="idx" class="wrapper">
         <div
-          class="number"
-          :class="{ empty: num === 0 }"
           v-for="num in row"
           :key="num"
           :ref="`ref${num}`"
+          class="number"
+          :class="{ empty: num === 0 }"
           @click="toggleSelected"
         >
           {{ num === 0 ? '' : num }}
         </div>
       </div>
     </div>
-    <div class="controls" v-if="!isBingoCardAssigned">
+    <div v-if="!isBingoCardAssigned" class="controls">
       <base-button :ico="icon" mode="animation" class="generate-card" @click="generateBingoCard">
         Generar {{ bingoCard && bingoCard.length > 0 ? 'otro' : 'un' }} cartón
       </base-button>
@@ -49,6 +49,17 @@ export default {
     icon() {
       return this.bingoCard.length > 0 ? 'fa-undo-alt' : null;
     },
+  },
+  created() {
+    const game = this.$store.getters['gam/getGame'];
+    const user = this.$store.getters['getUser'];
+    if (game.players && game.players[user.uuid]) {
+      this.numbers = game.players[user.uuid].numbers ?? [];
+      this.bingoCard = game.players[user.uuid].bingoCard ?? [];
+      if (this.bingoCard.length > 0) {
+        this.isBingoCardAssigned = true;
+      }
+    }
   },
   methods: {
     toggleSelected(e) {
@@ -84,17 +95,6 @@ export default {
       this.numbers = result.numbers;
       this.bingoCard = result.matrix;
     },
-  },
-  created() {
-    const game = this.$store.getters['gam/getGame'];
-    const user = this.$store.getters['getUser'];
-    if (game.players && game.players[user.uuid]) {
-      this.numbers = game.players[user.uuid].numbers ?? [];
-      this.bingoCard = game.players[user.uuid].bingoCard ?? [];
-      if (this.bingoCard.length > 0) {
-        this.isBingoCardAssigned = true;
-      }
-    }
   },
 };
 </script>

@@ -6,7 +6,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  extends: ['eslint:recommended', 'plugin:vue/vue3-essential', 'prettier'],
+  extends: ['eslint:recommended', 'plugin:vue/vue3-recommended', 'prettier'],
   overrides: [],
   parser: 'vue-eslint-parser',
   parserOptions: {

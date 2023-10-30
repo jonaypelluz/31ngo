@@ -1,5 +1,5 @@
 <template>
-  <button :class="mode" v-if="!link">
+  <button v-if="!link" :class="mode">
     <slot></slot>
     <i v-if="mode === 'animation'" class="icon fas" :class="icon"></i>
   </button>

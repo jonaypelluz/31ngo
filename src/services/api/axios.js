@@ -1,4 +1,3 @@
-import { db } from './firebase';
 
 export default {
   async addUserInfo(hash, uuid, data) {

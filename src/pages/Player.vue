@@ -4,18 +4,12 @@
       <h2 class="mb-5">Jugador</h2>
       <div class="form-group">
         <label for="players">Introduce un código de partida</label>
-        <input
-          type="text"
-          id="players"
-          placeholder="Código de partida"
-          class="form-control"
-          :value="gameId"
-          @input="gameId = $event.target.value.toUpperCase()"
-        />
+        <input id="players" type="text" placeholder="Código de partida" class="form-control" :value="gameId"
+          @input="gameId = $event.target.value.toUpperCase()" />
         <div v-if="error" class="alert alert-danger mt-3" role="alert">
           {{ error }}
         </div>
-        <base-button v-if="gameId && !isLoading" @click="checkGame" class="mt-3" mode="animation">
+        <base-button v-if="gameId && !isLoading" class="mt-3" mode="animation" @click="checkGame">
           Entrar en la partida
         </base-button>
       </div>
@@ -23,8 +17,8 @@
     <base-dialog :show="showCodeModal">
       Te quieres unir a una partida privada, tienes que introducir un segundo código de jugador
       invitado para poder entrar.
-      <input type="text" placeholder="Código de jugador" class="form-control" v-model="gameCode" />
-      <span class="text-danger" v-if="showCodeError">
+      <input v-model="gameCode" type="text" placeholder="Código de jugador" class="form-control" />
+      <span v-if="showCodeError" class="text-danger">
         El código no es correcto, vuelve a pedirle al anfitrión un código que sea correcto.
       </span>
       <template #actions>
@@ -35,7 +29,6 @@
 </template>
 
 <script>
-import fb from '@/services/firebase/fb.js';
 import Constants from '@/constants.js';
 
 export default {
@@ -51,10 +44,16 @@ export default {
       showCodeError: false,
     };
   },
+  created() {
+    this.user = this.$store.getters['getUser'];
+    this.$store.dispatch('gam/resetGame');
+  },
   methods: {
     async checkGame() {
       this.isLoading = true;
-      this.game = await fb.getGame(this.gameId);
+      console.log('GET THE GAME');
+      // this.game = await fb.getGame(this.gameId);
+      this.game = [];
       this.checkIfExists();
       this.isLoading = false;
     },
@@ -64,7 +63,8 @@ export default {
           this.game.usedCodes = [];
         }
         this.game.usedCodes.push(this.gameCode);
-        await fb.addUsedCode(this.game.hash, this.game.usedCodes);
+        console.log('ADD USER CODE');
+        // await fb.addUsedCode(this.game.hash, this.game.usedCodes);
         this.$router.push(`/games/player/${this.game.hash}`);
       } else {
         this.showCodeError = true;
@@ -107,11 +107,8 @@ export default {
       }
     },
   },
-  created() {
-    this.user = this.$store.getters['getUser'];
-    this.$store.dispatch('gam/resetGame');
-  },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

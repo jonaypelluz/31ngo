@@ -1,14 +1,7 @@
 <template>
   <base-centre-container v-if="!isLoading">
-    <host-controls
-      v-if="!game.hasFinished"
-      :game="game"
-      :numbers="totalNumbers"
-      :number="drawnNumber"
-      :automode="automode"
-      @draw-number="drawNumber"
-      @game-has-finished="finishGame"
-    />
+    <host-controls v-if="!game.hasFinished" :game="game" :numbers="totalNumbers" :number="drawnNumber"
+      :automode="automode" @draw-number="drawNumber" @game-has-finished="finishGame" />
     <div v-else>
       <h3>¡La partida ha finalizado!</h3>
       <div v-if="winner">
@@ -29,17 +22,12 @@
         <p>
           Nombre del jugador: <b>{{ game.players[yell.uuid].name }}</b>
         </p>
-        <div class="user-bingo-card-wrapper" v-if="yellCard">
-          <div class="user-bingo-card" v-for="(row, idx) in yellCard" :key="idx">
-            <div
-              class="user-number"
-              :class="{
-                empty: num === 0,
-                selected: game.drawnNumbers.includes(num),
-              }"
-              v-for="num in row"
-              :key="num"
-            >
+        <div v-if="yellCard" class="user-bingo-card-wrapper">
+          <div v-for="(row, idx) in yellCard" :key="idx" class="user-bingo-card">
+            <div v-for="num in row" :key="num" class="user-number" :class="{
+              empty: num === 0,
+              selected: game.drawnNumbers.includes(num),
+            }">
               {{ num === 0 ? '' : num }}
             </div>
           </div>
@@ -58,7 +46,7 @@ import Constants from '@/constants.js';
 import HostControls from '@/components/game/HostControls.vue';
 import HostInfo from '@/components/game/HostInfo.vue';
 import HostNumbers from '@/components/game/HostNumbers.vue';
-import fb from '@/services/firebase/fb.js';
+
 import { mapState } from 'vuex';
 import { wsManager } from '@/services/ws/webSocketManager';
 
@@ -105,6 +93,13 @@ export default {
       return this.game.players[this.game.winners.bingo].name;
     },
   },
+  created() {
+    this.getGameInfo();
+  },
+  mounted() {
+    this.ws = wsManager;
+    this.ws.connect(this.id, this.user.uuid);
+  },
   methods: {
     closeYell() {
       this.$store.dispatch('gam/resetYell');
@@ -115,7 +110,8 @@ export default {
         let randNum = Math.floor(Math.random() * Constants.BINGO_CARD_TOTAL_NUMBERS) + 1;
         if (!this.game.drawnNumbers.includes(randNum)) {
           this.$store.dispatch('gam/addDrawnNumber', randNum);
-          await fb.addDrawnNumbers(this.game);
+          console.log('ADD DRAW NUMBERS');
+          // await fb.addDrawnNumbers(this.game);
           break;
         }
         if (this.game.drawnNumbers.length >= Constants.BINGO_CARD_TOTAL_NUMBERS) {
@@ -132,7 +128,8 @@ export default {
       this.isGameStarted();
     },
     async finishGame() {
-      await fb.hasFinished(this.game.hash);
+      console.log('FINISH GAME');
+      // await fb.hasFinished(this.game.hash);
       this.$store.dispatch('gam/hasFinished');
       this.sendWsMsg({
         type: 'finish',
@@ -143,7 +140,9 @@ export default {
       this.isLoading = true;
 
       // Get game
-      const theGame = await fb.getGame(this.id);
+      console.log('GET THE GAME');
+      // const theGame = await fb.getGame(this.id);
+      const theGame = [];
       this.$store.dispatch('gam/updateGame', theGame);
 
       if (!this.game || this.game.host !== this.user.uuid) {
@@ -154,7 +153,8 @@ export default {
     },
     async isGameStarted() {
       if (!this.game.hasStarted && this.game.drawnNumbers && this.game.drawnNumbers.length > 0) {
-        await fb.hasStarted(this.id);
+        console.log('THE GAME IS STARTED?');
+        // await fb.hasStarted(this.id);
         this.$store.dispatch('gam/hasStarted');
       }
     },
@@ -181,7 +181,8 @@ export default {
 
         // We wait to update the firebase before we send websocket message
         const winners = this.$store.getters['gam/getWinners'];
-        await fb.updateWinners(this.game.hash, winners);
+        console.log('UPDATE WINNERS');
+        // await fb.updateWinners(this.game.hash, winners);
 
         this.sendWsMsg({
           type: 'winner',
@@ -195,13 +196,6 @@ export default {
       }
       this.closeYell();
     },
-  },
-  created() {
-    this.getGameInfo();
-  },
-  mounted() {
-    this.ws = wsManager;
-    this.ws.connect(this.id, this.user.uuid);
   },
 };
 </script>
