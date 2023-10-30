@@ -17,6 +17,19 @@ services:
         aliases:
           - 31ngo.local
 
-volumes: {
-  node_modules
-}
+  server:
+    container_name: server
+    build:
+      context: ../../
+      dockerfile: ops/docker/server/Dockerfile
+    working_dir: /app
+    volumes:
+      - ../../ws/:/app
+      - /app/node_modules
+    ports:
+      - '8083:8080'
+    networks:
+      default:
+        aliases:
+          - 31ngo-server.local
+

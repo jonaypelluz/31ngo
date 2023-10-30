@@ -1,5 +1,5 @@
 PROJECT_NAME = 31ngo
-CONTAINER = $$(docker ps | grep ${PROJECT_NAME} | awk '{print $$1}')
+CONTAINER = $$(docker ps | grep ${PROJECT_NAME}-app | awk '{print $$1}')
 DOCKER_COMPOSE := --env-file .env -p ${PROJECT_NAME} -f ops/docker/docker-compose.yml
 
 ## Builds the container image
