@@ -11,7 +11,7 @@ services:
       - ../../:/app
       - /app/node_modules
     ports:
-      - '8080:8080'
+      - 8080:8080
     networks:
       default:
         aliases:
@@ -29,9 +29,13 @@ services:
       - ../../ws/:/app
       - /app/node_modules
     ports:
-      - '8083:8080'
+      - 8083:80
     environment:
       - DB_CONN=mongodb://${DB_USERNAME}:${DB_PASSWORD}@mongodb
+      - APP_ENV=${SERVER_APP_ENV}
+      - WS_PORT=${WS_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
     networks:
       default:
         aliases:
@@ -40,10 +44,14 @@ services:
       - mongodb
 
   mongodb:
-    image: mongodb/mongodb-community-server:6.0-ubi8
+    container_name: db
+    image: mongodb/mongodb-community-server:7.0.1-ubi8
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGODB_INITDB_ROOT_USERNAME=${DB_USERNAME}
+      - MONGODB_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+    ports:
+      - 27017:27017
     volumes:
       - type: bind
         source: ./data
