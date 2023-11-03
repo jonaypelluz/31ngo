@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node ./index.js",
-    "migrate:create": "migrate create --template-file ./src/helpers/template.db.js --migrations-dir=\"./src/migrations\"",
+    "migrate:create": "migrate create --template-file ./src/infra/database/helpers/template.db.js --migrations-dir=\"./src/infra/database/migrations\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

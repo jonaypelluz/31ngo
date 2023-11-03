@@ -4,6 +4,6 @@ const express = require('express');
 
 const app = express();
 
-app.use('/api/v1/users', require('@/routes/user.route'));
+app.use('/api/v1/users', require('@/interfaces/http/user.route'));
 
 module.exports = app;

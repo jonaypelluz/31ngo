@@ -31,25 +31,21 @@ services:
     ports:
       - 8083:80
     environment:
-      - DB_CONN=mongodb://${DB_USERNAME}:${DB_PASSWORD}@mongodb
       - APP_ENV=${SERVER_APP_ENV}
       - WS_PORT=${WS_PORT}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_URL=${DB_URL}
     networks:
       default:
         aliases:
           - 31ngo-server.local
+    links:
+      - mongodb
     depends_on:
       - mongodb
 
   mongodb:
     container_name: db
-    image: mongodb/mongodb-community-server:7.0.1-ubi8
-    environment:
-      - MONGODB_INITDB_ROOT_USERNAME=${DB_USERNAME}
-      - MONGODB_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
-      - MONGO_INITDB_DATABASE=${DB_NAME}
+    image: mongo:5.0.22
     ports:
       - 27017:27017
     volumes:
