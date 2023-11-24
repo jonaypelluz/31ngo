@@ -2,22 +2,18 @@
   "name": "31ngo-server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.mjs",
   "scripts": {
-    "start": "node ./index.js",
-    "migrate:create": "migrate create --template-file ./src/infra/database/helpers/template.db.js --migrations-dir=\"./src/infra/database/migrations\"",
+    "start": "node --trace-warnings ./index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "awilix": "^9.0.0",
     "dotenv": "^10.0.0",
     "express": "^4.18.2",
-    "migrate": "^2.0.0",
     "mongoose": "^8.0.0",
     "ws": "^8.2.3"
-  },
-  "devDependencies": {
-    "module-alias": "^2.2.3"
   }
 }
