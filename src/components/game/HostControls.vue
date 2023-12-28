@@ -144,22 +144,23 @@ export default {
 
 <style lang="scss" scoped>
 .host-card {
-    max-width: 50%;
+    max-width: 80%;
     display: flex;
     align-items: center;
     padding: 12px;
-    justify-content: center;
+    justify-content: space-evenly;
+    margin: 0 auto;
+
     .game-control {
         border-right: 1px solid #fff;
-        margin-right: 24px;
-        padding-right: 24px;
+        padding-right: 48px;
     }
 }
 
 .drawn-number {
     font-size: 10rem;
     line-height: 1;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 .finish-btn {

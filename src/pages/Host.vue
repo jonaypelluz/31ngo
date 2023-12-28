@@ -2,39 +2,29 @@
     <base-centre-container>
         <div class="form-wrapper text-center">
             <h2 class="mb-2">Anfitrión</h2>
-            <div v-if="showActions">
-                <div v-if="!mode" class="game-mode">
-                    <label>Elige el modo de juego</label>
-                    <p class="description">
-                        En el modo de juego <b>PÚBLICO</b> podrán participar los jugadores que
-                        quieran, en el <b>PRIVADO</b> se limita hasta 40 jugadores que tendrán un
-                        código de partida privado para cada uno de ellos. Una vez que el anfitrión
-                        empieza la partida no se podrá acceder a ella.
-                    </p>
-                    <base-button mode="flat" @click="chooseGameMode('private')">
-                        Privado
-                    </base-button>
-                    <base-button class="ml-3" @click="chooseGameMode('public')">
-                        Público
-                    </base-button>
-                </div>
-                <div v-if="mode === 'private'">
-                    <label>Introduce cantidad de jugadores</label>
-                    <div class="controls">
-                        <base-button v-if="!game" mode="flat" @click="decreasePlayers">
-                            -
-                        </base-button>
-                        <span class="form-control">{{ players }}</span>
-                        <base-button v-if="!game" mode="flat" class="pb-0" @click="increasePlayers">
-                            +
-                        </base-button>
-                    </div>
-                </div>
-                <base-button v-if="showCreateBtn" mode="animation" @click="createGame">
-                    Crear partida
-                </base-button>
+            <div v-if="!mode" class="game-mode">
+                <label>Elige el modo de juego</label>
+                <p class="description">
+                    En el modo de juego <b>PÚBLICO</b> podrán participar los jugadores que quieran,
+                    en el <b>PRIVADO</b> se limita hasta 40 jugadores que tendrán un código de
+                    partida privado para cada uno de ellos. Una vez que el anfitrión empieza la
+                    partida no se podrá acceder a ella.
+                </p>
+                <base-button mode="flat" @click="chooseGameMode('private')"> Privado </base-button>
+                <base-button class="ml-3" @click="chooseGameMode('public')"> Público </base-button>
             </div>
-            <base-card v-if="game">
+            <div v-if="mode === 'private'">
+                <label>Introduce cantidad de jugadores</label>
+                <div class="controls">
+                    <base-button mode="flat" @click="decreasePlayers"> - </base-button>
+                    <span class="form-control">{{ players }}</span>
+                    <base-button mode="flat" class="pb-0" @click="increasePlayers"> + </base-button>
+                </div>
+            </div>
+            <base-button v-if="showCreateBtn" mode="animation" @click="createGame">
+                Crear partida
+            </base-button>
+            <base-card v-if="isGameCreated">
                 <h3 class="mb-2">Partida creada</h3>
                 <h5>
                     Copia el código de la partida y envíalo a quien quieras que participe
@@ -78,13 +68,14 @@ export default {
         const mode = ref(null);
 
         const game = computed(() => store.state.gam.game);
-        const showActions = computed(() => !game.value);
+
+        const isGameCreated = computed(() => game.value.hash !== null);
         const hostUrl = computed(() => `/games/host/${game.value?.hash}`);
         const user = computed(() => store.state.user);
 
         const showCreateBtn = computed(() => {
             return (
-                !game.value &&
+                !isGameCreated.value &&
                 (mode.value === Constants.BINDO_MODE_PUBLIC ||
                     (players.value > 0 &&
                         players.value <= Constants.BINDO_MODE_PRIVATE_MAX_PLAYERS))
@@ -155,7 +146,7 @@ export default {
             copiedText,
             mode,
             showCreateBtn,
-            showActions,
+            isGameCreated,
             hostUrl,
             chooseGameMode,
             copyHash,

@@ -87,18 +87,14 @@ export default {
         };
 
         const sendGameCode = async () => {
-            console.log(user.value);
             if (game.value.codes.includes(gameCode.value)) {
-                const updatedGame = await apiService.addPlayerUsedCode(
+                await apiService.addPlayerUsedCode(
                     game.value.hash,
                     gameCode.value,
                     user.value.uuid,
                 );
 
-                if (updatedGame) {
-                    game.value = updatedGame;
-                    router.push(`/games/player/${game.value.hash}`);
-                }
+                router.push(`/games/player/${game.value.hash}`);
             } else {
                 showCodeError.value = true;
             }

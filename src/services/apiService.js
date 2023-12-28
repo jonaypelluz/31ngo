@@ -1,40 +1,43 @@
 import axios from 'axios';
 
-const apiVersion = '/api/v1';
 
 const api = axios.create({
-    baseURL: `http://localhost:8080${apiVersion}`,
+    baseURL: import.meta.env.VITE_APP_API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
+const processResponse = (response) => {
+    if (response.status === 200 && response.data && response.data.data) {
+        return response.data.data;
+    } else {
+        return null;
+    }
+};
+
 export default {
     async addPlayer(hash, uuid, data) {
-        return await api.post('/add-player', { hash, uuid, ...data });
+        await api.post('/add-player', { hash, uuid, ...data });
     },
     async addPlayerUsedCode(hash, code, uuid) {
-        const response = api.post('/add-player-used-code', { hash, code, uuid });
-        if (response.data && response.data.data) {
-            return response.data.data;
-        } else {
-            return null;
-        }
+        await api.post('/add-player-used-code', { hash, code, uuid });
     },
     async addDrawnNumbers(hash, uuid, drawnNumber) {
-        return await api.post('/add-drawn-numbers', { hash, uuid, drawnNumber });
+        await api.post('/add-drawn-numbers', { hash, uuid, drawnNumber });
     },
     async createGame(game) {
-        return await api.post('/create-game', game);
+        await api.post('/create-game', game);
     },
     async deleteGame(hash, uuid) {
-        return await api.post('/delete-game', { hash, uuid });
+        await api.post('/delete-game', { hash, uuid });
     },
     async getGame(hash) {
-        const response = await api.post('/get-game', { hash });
-        if (response.data && response.data.data) {
-            return response.data.data;
-        } else {
+        try {
+            const response = await api.post('/get-game', { hash });
+            return processResponse(response);
+        } catch (error) {
+            console.error('Error in addPlayerUsedCode:', error);
             return null;
         }
     },
@@ -42,22 +45,24 @@ export default {
         return await api.post('/has-finished', { hash, uuid });
     },
     async getHostGame(uuid) {
-        const response = await api.post('/get-host-game', { uuid });
-        if (response.data && response.data.data) {
-            return response.data.data;
-        } else {
+        try {
+            const response = await api.post('/get-host-game', { uuid });
+            return processResponse(response);
+        } catch (error) {
+            console.error('Error in addPlayerUsedCode:', error);
             return null;
         }
     },
     async getPlayer(hash, uuid) {
-        const response = await api.post('/get-player', { hash, uuid });
-        if (response.data && response.data.data) {
-            return response.data.data;
-        } else {
+        try {
+            const response = await api.post('/get-player', { hash, uuid });
+            return processResponse(response);
+        } catch (error) {
+            console.error('Error in addPlayerUsedCode:', error);
             return null;
         }
     },
     async updateWinners(hash, uuid, winners) {
-        return await api.post('/update-winners', { hash, uuid, winners });
+        await api.post('/update-winners', { hash, uuid, winners });
     },
 };

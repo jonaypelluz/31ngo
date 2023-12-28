@@ -14,14 +14,14 @@
                 </div>
             </div>
         </div>
-        <div v-if="showPlayerNames" class="player-names mb-3">
-            <h4 class="mt-3">Nombres de los jugadores</h4>
+        <div v-if="showPlayerNames" class="player-names mb-2">
+            <h4 class="mt-2">Nombres de los jugadores</h4>
             <span v-for="(player, idx) in game.players" :key="idx">
                 {{ player.name }}{{ addComa(game.players.length, idx) }}
             </span>
         </div>
-        <div v-if="showPlayersCodes" class="game-codes mb-3">
-            <h4 class="mt-3">Códigos de jugadores</h4>
+        <div v-if="showPlayersCodes" class="game-codes mb-2">
+            <h4 class="mt-2">Códigos de jugadores</h4>
             <ul class="player-codes">
                 <li
                     v-for="code in game.codes"
@@ -111,7 +111,7 @@ export default {
 
     h3,
     h4 {
-        font-size: 1.3rem;
+        font-size: 1rem;
     }
 
     .game-tag {
@@ -119,12 +119,12 @@ export default {
     }
 
     .game-codes {
-        width: 80%;
+        width: 90%;
         margin: 0 auto;
 
         .player-codes {
             width: 100%;
-            height: 90px;
+            max-height: 90px;
             overflow: auto;
             margin: 0;
             padding: 0;
@@ -176,7 +176,7 @@ export default {
 
     .online-players {
         margin-bottom: 0.2rem;
-        font-size: 3rem;
+        font-size: 2rem;
         line-height: 1;
     }
 }

@@ -10,6 +10,7 @@ build: copy-env delete-mongodb-data compose
 	
 copy-env:
 	sh ops/scripts/copy-env.sh
+	sh ops/scripts/copy-env.sh ws
 
 compose:
 	docker-compose ${DOCKER_COMPOSE} up -d --build

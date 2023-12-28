@@ -5,19 +5,24 @@
 </template>
 
 <script>
+import { computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+import { useRoute } from 'vue-router';
+
 export default {
-    data() {
+    setup() {
+        const store = useStore();
+        const route = useRoute();
+
+        const showHeader = computed(() => !route.meta.hideHeader);
+
+        onMounted(() => {
+            store.dispatch('autoLogin');
+        });
+
         return {
-            hideHeader: true,
+            showHeader,
         };
-    },
-    computed: {
-        showHeader() {
-            return !this.$route.meta.hideHeader;
-        },
-    },
-    created() {
-        this.$store.dispatch('autoLogin');
     },
 };
 </script>
@@ -69,8 +74,7 @@ input[type='number'] {
 
 .beta {
     position: fixed;
-    width: 100%;
-    left: 10px;
+    right: 10px;
     bottom: -7px;
 }
 
