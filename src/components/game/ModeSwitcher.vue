@@ -1,37 +1,37 @@
 <template>
-  <div class="switch-btn">
-    <input
-      id="automatic"
-      type="checkbox"
-      hidden="hidden"
-      :checked="automatic"
-      @change="setBingoMode"
-    />
-    <label class="switch" for="automatic"></label>
-    <label class="switch-label">
-      {{ automaticLabel }}
-      <span v-if="showTimerSeconds">- {{ timer }}s</span>
-    </label>
-  </div>
+    <div class="switch-btn">
+        <input
+            id="automatic"
+            type="checkbox"
+            hidden="hidden"
+            :checked="automatic"
+            @change="setBingoMode"
+        />
+        <label class="switch" for="automatic"></label>
+        <label class="switch-label">
+            {{ automaticLabel }}
+            <span v-if="showTimerSeconds">- {{ timer }}s</span>
+        </label>
+    </div>
 </template>
 
 <script>
 export default {
-  props: ['automatic', 'showTimer', 'timer'],
-  emits: ['set-bingo-mode'],
-  computed: {
-    automaticLabel() {
-      return !this.automatic ? 'Manual' : 'Automático';
+    props: ['automatic', 'showTimer', 'timer'],
+    emits: ['set-bingo-mode'],
+    computed: {
+        automaticLabel() {
+            return !this.automatic ? 'Manual' : 'Automático';
+        },
+        showTimerSeconds() {
+            return this.automatic && this.showTimer;
+        },
     },
-    showTimerSeconds() {
-      return this.automatic && this.showTimer;
+    methods: {
+        setBingoMode() {
+            this.$emit('set-bingo-mode', !this.automatic);
+        },
     },
-  },
-  methods: {
-    setBingoMode() {
-      this.$emit('set-bingo-mode', !this.automatic);
-    },
-  },
 };
 </script>
 
@@ -39,57 +39,57 @@ export default {
 @import '@/scss/_variables.scss';
 
 .switch-label {
-  display: inline-block;
-  margin-left: 0.5rem;
-  margin-top: 0.1rem;
+    display: inline-block;
+    margin-left: 0.5rem;
+    margin-top: 0.1rem;
 }
 
 //switch btn --> https://codepen.io/maheshwaghmare/pen/QxdpqG
 .switch {
-  display: inline-block;
-  position: relative;
-  width: 50px;
-  height: 25px;
-  border-radius: 20px;
-  background: $third;
-  transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  vertical-align: middle;
-  cursor: pointer;
+    display: inline-block;
+    position: relative;
+    width: 50px;
+    height: 25px;
+    border-radius: 20px;
+    background: $third;
+    transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    vertical-align: middle;
+    cursor: pointer;
 
-  &:active::before {
-    box-shadow:
-      0 2px 8px rgba(0, 0, 0, 0.28),
-      0 0 0 20px rgba(128, 128, 128, 0.1);
-  }
+    &:active::before {
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.28),
+            0 0 0 20px rgba(128, 128, 128, 0.1);
+    }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 1px;
-    left: 2px;
-    width: 22px;
-    height: 22px;
-    background: #fafafa;
-    border-radius: 50%;
-    transition:
-      left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-      background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+    &::before {
+        content: '';
+        position: absolute;
+        top: 1px;
+        left: 2px;
+        width: 22px;
+        height: 22px;
+        background: #fafafa;
+        border-radius: 50%;
+        transition:
+            left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+            background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+            box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 }
 
 input:checked + .switch {
-  background: $primary;
+    background: $primary;
 }
 
 input:checked + .switch::before {
-  left: 27px;
-  background: #fff;
+    left: 27px;
+    background: #fff;
 }
 
 input:checked + .switch:active::before {
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.28),
-    0 0 0 20px rgba(0, 150, 136, 0.2);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.28),
+        0 0 0 20px rgba(0, 150, 136, 0.2);
 }
 </style>

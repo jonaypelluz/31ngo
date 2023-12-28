@@ -1,52 +1,76 @@
 import { createStore } from 'vuex';
 import gameModule from './modules/game/game.js';
 
-const store = createStore({
-  modules: {
-    gam: gameModule,
-  },
-
-  state() {
+const getDefaultState = () => {
     return {
-      user: null,
-      token: null,
+        user: {
+            uuid: null,
+            hash: null,
+            numbers: [],
+            bingoCard: [],
+        },
+        token: null,
     };
-  },
+};
 
-  mutations: {
-    addUser(state, payload) {
-      state.user = payload;
-    },
-    addUserToken(state, payload) {
-      state.token = payload;
-    },
-  },
+const updateUserInSessionStorage = (user) => {
+    sessionStorage.setItem('user', JSON.stringify(user));
+};
 
-  actions: {
-    autoLogin(context) {
-      const uuid = sessionStorage.getItem('user');
+const store = createStore({
+    modules: {
+        gam: gameModule,
+    },
 
-      if (uuid) {
-        context.commit('addUser', { uuid: uuid });
-      }
-    },
-    setUser(context, user) {
-      sessionStorage.setItem('user', user.uuid);
-      context.commit('addUser', user);
-    },
-    setUserToken(context, token) {
-      context.commit('addUserToken', token);
-    },
-  },
+    state: getDefaultState,
 
-  getters: {
-    getUser(state) {
-      return state.user;
+    mutations: {
+        addUser(state, newUser) {
+            state.user = { ...state.user, ...newUser };
+            updateUserInSessionStorage(state.user);
+        },
+        addUserToken(state, token) {
+            state.token = token;
+        },
+        updateUserUUID(state, uuid) {
+            state.user.uuid = uuid;
+            updateUserInSessionStorage(state.user);
+        },
+        resetState(state) {
+            Object.assign(state, getDefaultState());
+            sessionStorage.removeItem('user');
+        },
     },
-    getUserToken(state) {
-      return state.token;
+
+    actions: {
+        autoLogin({ commit }) {
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            if (user) {
+                commit('addUser', user);
+            }
+        },
+        setUser({ commit }, user) {
+            commit('addUser', user);
+        },
+        setUserUUID({ commit }, uuid) {
+            commit('updateUserUUID', uuid);
+        },
+        setUserToken(context, token) {
+            context.commit('addUserToken', token);
+        },
+        resetUserState(context) {
+            context.commit('resetState');
+        },
     },
-  },
+
+    getters: {
+        getUser(state) {
+            return state.user;
+        },
+        getUserToken(state) {
+            return state.token;
+        },
+    },
 });
 
 export default store;

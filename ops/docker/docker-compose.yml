@@ -11,45 +11,8 @@ services:
       - ../../:/app
       - /app/node_modules
     ports:
-      - 8080:8080
+      - 3000:8080
     networks:
       default:
         aliases:
           - 31ngo.local
-    depends_on:
-      - server
-
-  server:
-    container_name: server
-    build:
-      context: ../../
-      dockerfile: ops/docker/server/Dockerfile
-    working_dir: /app
-    volumes:
-      - ../../ws/:/app
-      - /app/node_modules
-    ports:
-      - 8083:80
-    environment:
-      - APP_ENV=${SERVER_APP_ENV}
-      - WS_PORT=${WS_PORT}
-      - DB_URL=${DB_URL}
-    networks:
-      default:
-        aliases:
-          - 31ngo-server.local
-    links:
-      - mongodb
-    depends_on:
-      - mongodb
-
-  mongodb:
-    container_name: db
-    image: mongo:5.0.22
-    ports:
-      - 27017:27017
-    volumes:
-      - type: bind
-        source: ./data
-        target: /data/db
-
