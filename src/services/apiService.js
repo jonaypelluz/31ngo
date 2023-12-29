@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const api = axios.create({
     baseURL: import.meta.env.VITE_APP_API_URL,
     headers: {
@@ -37,7 +36,7 @@ export default {
             const response = await api.post('/get-game', { hash });
             return processResponse(response);
         } catch (error) {
-            console.error('Error in addPlayerUsedCode:', error);
+            console.error('Error in getGame:', error);
             return null;
         }
     },
@@ -49,7 +48,7 @@ export default {
             const response = await api.post('/get-host-game', { uuid });
             return processResponse(response);
         } catch (error) {
-            console.error('Error in addPlayerUsedCode:', error);
+            console.error('Error in getHostName:', error);
             return null;
         }
     },
@@ -58,7 +57,7 @@ export default {
             const response = await api.post('/get-player', { hash, uuid });
             return processResponse(response);
         } catch (error) {
-            console.error('Error in addPlayerUsedCode:', error);
+            console.error('Error in getPlayer:', error);
             return null;
         }
     },

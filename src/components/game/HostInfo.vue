@@ -1,13 +1,13 @@
 <template>
-    <div class="game-info mt-4">
+    <div class="game-info">
         <div class="row">
             <div class="col">
-                <h3 class="mb-0">ID. de la partida</h3>
+                <h3 class="mb-0">Partida</h3>
                 <p class="game-tag black">{{ game.hash }}</p>
             </div>
             <div class="col">
                 <div v-if="!game.hasFinished">
-                    <h4>Jugadores online</h4>
+                    <h3 class="mb-0">Jugadores</h3>
                     <p class="online-players">
                         {{ onlinePlayers }}
                     </p>
@@ -35,13 +35,13 @@
                 </li>
             </ul>
         </div>
-        <base-button class="mt-3" mode="flat" @click="deleteGame"> Borrar partida </base-button>
+        <base-button class="mt-3" mode="flat" @click="deleteGame">Borrar partida</base-button>
     </div>
 </template>
 
 <script>
 import { computed } from 'vue';
-import Constants from '@/constants.js';
+import Constants from '@/constants';
 
 export default {
     props: ['game'],

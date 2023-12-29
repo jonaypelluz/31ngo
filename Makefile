@@ -6,7 +6,7 @@ CONTAINER = $$(docker ps | grep ${CONTAINER_NAME} | awk '{print $$1}')
 DOCKER_COMPOSE := --env-file .env -p ${PROJECT_NAME} -f ops/docker/docker-compose.yml
 
 ## Builds the container image
-build: copy-env delete-mongodb-data compose
+build: hosts copy-env delete-mongodb-data compose
 	
 copy-env:
 	sh ops/scripts/copy-env.sh
@@ -17,6 +17,9 @@ compose:
 
 delete-mongodb-data:
 	sh ops/scripts/delete-mongodb-data.sh
+
+hosts:
+	@./ops/scripts/hosts.sh
 
 ## Starts the container
 start:

@@ -27,16 +27,16 @@
 </template>
 
 <script>
-import Constants from '@/constants.js';
 import HostControls from '@/components/game/HostControls.vue';
 import HostNumbers from '@/components/game/HostNumbers.vue';
 import WinnerAnnouncement from '@/components/game/WinnerAnnouncement.vue';
 import YellDialog from '@/components/game/YellDialog.vue';
-import apiService from '@/services/apiService.js';
-import { wsManager } from '@/services/ws/webSocketManager';
-import { ref, computed, onMounted, watch, toRaw } from 'vue';
-import { useStore } from 'vuex';
+import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import Constants from '@/constants';
+import apiService from '@/services/apiService';
+import useSendWs from '@/utils/useSendWs';
 
 export default {
     components: {
@@ -49,6 +49,7 @@ export default {
     setup(props) {
         const store = useStore();
         const router = useRouter();
+        const { sendWsMsg } = useSendWs(props.id);
 
         const totalNumbers = Constants.BINGO_CARD_TOTAL_NUMBERS;
         const ws = ref(null);
@@ -92,8 +93,7 @@ export default {
                 router.replace('/game-not-found');
             }
             store.dispatch('gam/updateGame', theGame);
-            ws.value = wsManager;
-            ws.value.connect(props.id, user.value.uuid);
+            store.dispatch('gam/connectWS', { gameId: props.id, uuid: user.value.uuid });
         });
 
         const yellData = computed(() => ({
@@ -145,13 +145,6 @@ export default {
             closeYell();
         };
 
-        const sendWsMsg = (data) => {
-            ws.value.send({
-                ...data,
-                gameId: props.id,
-            });
-        };
-
         const deleteGame = async () => {
             await apiService.deleteGame(game.value.hash, user.value.uuid);
             store.dispatch('gam/resetGame');
@@ -191,6 +184,7 @@ export default {
             showYell,
             yellTitle,
             yellData,
+            finishGame,
             notValidWinner,
             setValidWinner,
         };

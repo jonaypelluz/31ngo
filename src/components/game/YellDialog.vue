@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import { toRefs } from 'vue';
 import BingoCardDisplay from './BingoCardDisplay.vue';
+import { toRefs } from 'vue';
 
 export default {
     name: 'YellDialog',

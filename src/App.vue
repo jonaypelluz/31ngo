@@ -1,15 +1,22 @@
 <template>
     <the-header v-if="showHeader"></the-header>
     <router-view></router-view>
+    <bg-bubbles></bg-bubbles>
     <p class="beta">31ngo beta v.1.0</p>
 </template>
 
 <script>
+import BgBubbles from '@/components/UI/BgBubbles.vue';
+import TheHeader from '@/components/layout/TheHeader.vue';
 import { computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default {
+    components: {
+        BgBubbles,
+        TheHeader,
+    },
     setup() {
         const store = useStore();
         const route = useRoute();

@@ -45,11 +45,11 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import Constants from '@/constants.js';
-import apiService from '@/services/apiService.js';
+import Constants from '@/constants';
+import apiService from '@/services/apiService';
 
 export default {
     setup() {

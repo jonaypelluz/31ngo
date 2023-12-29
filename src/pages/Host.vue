@@ -51,12 +51,12 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import apiService from '@/services/apiService.js';
-import Constants from '@/constants.js';
-import helpers from '@/utils/helpers.js';
+import { useStore } from 'vuex';
+import Constants from '@/constants';
+import apiService from '@/services/apiService';
+import helpers from '@/utils/helpers';
 
 export default {
     setup() {

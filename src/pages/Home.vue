@@ -13,10 +13,10 @@
 
 <script>
 import { onMounted } from 'vue';
-import apiService from '@/services/apiService.js';
-import helpers from '@/utils/helpers.js';
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import apiService from '@/services/apiService';
+import helpers from '@/utils/helpers';
 
 export default {
     setup() {

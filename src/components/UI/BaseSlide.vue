@@ -7,22 +7,25 @@
     </div>
 </template>
 
-<script>
-export default {
-    props: ['multiple'],
-    data() {
-        return {
-            showSlide: false,
-        };
-    },
-    methods: {
-        toggleSlide(e) {
-            e.target.blur();
-            this.showSlide = !this.showSlide;
-        },
-    },
-};
+<script setup>
+import { ref, defineProps } from 'vue';
+
+const props = defineProps({
+    multiple: {
+        type: Boolean,
+        required: false,
+        default: false
+    }
+});
+
+const showSlide = ref(false);
+
+const toggleSlide = (e) => {
+    e.target.blur();
+    showSlide.value = !showSlide.value;
+}
 </script>
+
 
 <style lang="scss" scoped>
 @import '@/scss/_variables.scss';

@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import gameModule from './modules/game/game.js';
+import gameModule from './modules/game/game';
 
 const getDefaultState = () => {
     return {

@@ -18,7 +18,7 @@ a {
 }
 
 header {
-    height: 50px;
+    height: 35px;
 }
 
 .main-logo {

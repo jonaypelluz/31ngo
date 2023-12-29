@@ -37,10 +37,10 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
-import BingoCard from '@/utils/bingoCard.js';
-import Constants from '@/constants.js';
+import Constants from '@/constants';
+import BingoCard from '@/utils/bingoCard';
 
 export default {
     props: ['add-bingo-card'],

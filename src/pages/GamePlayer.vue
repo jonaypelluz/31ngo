@@ -31,13 +31,13 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, toRaw } from 'vue';
-import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
 import PlayerActions from '@/components/game/PlayerActions.vue';
 import PlayerCard from '@/components/game/PlayerCard.vue';
-import { wsManager } from '@/services/ws/webSocketManager';
-import apiService from '@/services/apiService.js';
+import { computed, onMounted, ref, toRaw } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import apiService from '@/services/apiService';
+import useSendWs from '@/utils/useSendWs';
 
 export default {
     components: {
@@ -48,12 +48,15 @@ export default {
     setup(props) {
         const store = useStore();
         const router = useRouter();
+
+        const { sendWsMsg } = useSendWs(props.id);
+
         const isLoading = ref(false);
-        const ws = ref(wsManager);
         const showNameForm = ref(false);
         const showNameError = ref(false);
         const userName = ref(null);
         const userData = ref(null);
+
         const user = computed(() => store.state.user);
         const game = computed(() => store.state.gam.game);
         const yell = computed(() => store.state.gam.yell);
@@ -116,7 +119,7 @@ export default {
             if (!game.value.hash || game.value.host === user.value.uuid) {
                 router.replace('/game-not-found');
             }
-            ws.value.connect(props.id, user.value.uuid);
+            store.dispatch('gam/connectWS', { gameId: props.id, uuid: user.value.uuid });
         });
 
         const addName = (data) => {
@@ -134,12 +137,12 @@ export default {
                 };
                 showNameError.value = false;
                 showNameForm.value = false;
-                store.dispatch('gam/addUserInfo', toRaw(data));
+                store.dispatch('gam/addPlayerUuid', toRaw(data.uuid));
 
                 await apiService.addPlayer(game.value.hash, user.value.uuid, data);
 
                 sendWsMsg({
-                    type: 'adduser',
+                    type: 'addplayer',
                     data: data,
                     uuid: user.value.uuid,
                 });
@@ -157,13 +160,6 @@ export default {
             });
         };
 
-        const sendWsMsg = (data) => {
-            ws.value.send({
-                ...data,
-                gameId: props.id,
-            });
-        };
-
         const yellAction = (type) => {
             store.dispatch('gam/updateYell', {
                 type: type,
@@ -177,7 +173,6 @@ export default {
 
         return {
             isLoading,
-            ws,
             showNameForm,
             showNameError,
             userName,

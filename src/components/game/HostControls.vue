@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import { ref, computed, watch, onUnmounted } from 'vue';
-import Constants from '@/constants.js';
-import HostInfo from '@/components/game/HostInfo.vue';
 import ModeSwitcher from './ModeSwitcher.vue';
+import HostInfo from '@/components/game/HostInfo.vue';
+import { computed, onUnmounted, ref, watch } from 'vue';
+import Constants from '@/constants';
 
 export default {
     components: {
@@ -160,7 +160,7 @@ export default {
 .drawn-number {
     font-size: 10rem;
     line-height: 1;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .finish-btn {
