@@ -110,6 +110,7 @@ export default {
         border-top: 0 none;
         border-radius: 0 0 1rem 1rem;
         top: 0;
+        z-index: 1;
 
         &:hover,
         &:focus,

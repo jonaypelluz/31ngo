@@ -139,6 +139,9 @@ const actions = {
     },
     initWS({ dispatch }) {
         wsService.on('ws-message', (response) => {
+            if (response.message) {
+                response = response.message;
+            }
             switch (response.type) {
                 case 'addplayer':
                     dispatch('addPlayerUuid', response.uuid);
@@ -166,6 +169,9 @@ const actions = {
                     });
                     dispatch('resetYell');
                     break;
+                default:
+                    console.info(response);
+                    break;
             }
         });
 
@@ -183,7 +189,7 @@ const actions = {
     },
     sendWSMessage({ state }, data) {
         if (state.wsConnected) {
-            wsService.send(JSON.stringify(data));
+            wsService.send(data);
         }
     },
     connectWS({ dispatch }, { gameId, uuid }) {

@@ -19,7 +19,7 @@
                 </base-button>
             </div>
         </div>
-        <host-info :game="game" @delete-game="deleteGame" />
+        <host-info :game="game" />
     </base-card>
 </template>
 
@@ -35,6 +35,7 @@ export default {
         ModeSwitcher,
     },
     props: ['game', 'numbers', 'number', 'isAutomodeEnabled'],
+    emits: ['setBingoMode'],
     setup(props, { emit }) {
         const timer = ref(10);
         const showTimer = ref(true);
@@ -106,17 +107,13 @@ export default {
 
         const finishGame = () => {
             stopAutomaticMode();
-            emit('game-has-finished');
+            emit('finish-game');
         };
 
         const drawTheNumber = (e) => {
             stopAutomaticMode();
             e.target.blur();
             emit('draw-number');
-        };
-
-        const deleteGame = () => {
-            emit('delete-game');
         };
 
         onUnmounted(() => {
@@ -135,7 +132,6 @@ export default {
             stopAutomaticMode,
             drawANumber,
             finishGame,
-            deleteGame,
             drawTheNumber,
         };
     },

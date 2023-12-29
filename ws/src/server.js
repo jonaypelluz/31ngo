@@ -94,5 +94,5 @@ wss.on('connection', (wsClient) => {
 
 //start the web server
 server.listen(serverPort, () => {
-    console.log(`Websocket server started on port ` + serverPort);
+    console.info(`Websocket server started on port ` + serverPort);
 });

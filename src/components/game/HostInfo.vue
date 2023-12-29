@@ -35,7 +35,6 @@
                 </li>
             </ul>
         </div>
-        <base-button class="mt-3" mode="flat" @click="deleteGame">Borrar partida</base-button>
     </div>
 </template>
 
@@ -45,7 +44,7 @@ import Constants from '@constants';
 
 export default {
     props: ['game'],
-    setup(props, { emit }) {
+    setup(props) {
         const onlinePlayers = computed(() => {
             let players = '';
             if (props.game.mode === Constants.BINDO_MODE_PRIVATE) {
@@ -83,17 +82,12 @@ export default {
             });
         };
 
-        const deleteGame = () => {
-            emit('delete-game');
-        };
-
         return {
             onlinePlayers,
             showPlayersCodes,
             showPlayerNames,
             addComa,
             copyHash,
-            deleteGame,
         };
     },
 };

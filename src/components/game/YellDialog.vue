@@ -1,10 +1,14 @@
 <template>
-    <base-dialog v-if="show" :title="yellTitle" @close="handleClose">
+    <base-dialog :show="show" :title="yellTitle" @close="handleClose">
         <div>
             <p>
                 Nombre del jugador: <b>{{ yellData.playerName }}</b>
             </p>
-            <bingo-card-display v-if="yellData" :cardData="yellData"></bingo-card-display>
+            <bingo-card-display
+                v-if="yellData"
+                :card="card"
+                :selectedNumbers="selectedNumbers"
+            ></bingo-card-display>
         </div>
         <template #actions>
             <base-button class="black" mode="flat" @click="handleNotValid">No válido</base-button>
@@ -14,7 +18,7 @@
 </template>
 
 <script>
-import { toRefs } from 'vue';
+import { computed, toRefs } from 'vue';
 import BingoCardDisplay from '@game/BingoCardDisplay.vue';
 
 export default {
@@ -30,12 +34,15 @@ export default {
     setup(props, { emit }) {
         const { show, yellTitle, yellData } = toRefs(props);
 
+        const card = computed(() => yellData.value.card);
+        const selectedNumbers = computed(() => yellData.value.selectedNumbers);
+
         const handleNotValid = () => {
-            emit('notValid');
+            emit('not-valid');
         };
 
         const handleValid = () => {
-            emit('validateWinner');
+            emit('validate-winner');
         };
 
         const handleClose = () => {
@@ -46,6 +53,8 @@ export default {
             show,
             yellTitle,
             yellData,
+            card,
+            selectedNumbers,
             handleNotValid,
             handleValid,
             handleClose,

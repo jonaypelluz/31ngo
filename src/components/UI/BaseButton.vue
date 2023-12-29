@@ -69,6 +69,7 @@ a {
         color: #fff;
         &.black {
             border-color: #000;
+            color: #000;
         }
         &:hover,
         &:focus {

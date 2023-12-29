@@ -64,7 +64,7 @@ const tryClose = () => {
 
 dialog {
     position: fixed;
-    top: 13vh;
+    top: 2vh;
     left: 10%;
     width: 80%;
     z-index: 1002;
@@ -81,10 +81,11 @@ dialog {
         background-color: $third;
         color: white;
         width: 100%;
-        padding: 1rem;
+        padding: 0.5rem 1rem;
 
         h2 {
             margin: 0;
+            font-size: 1.5rem;
         }
     }
 

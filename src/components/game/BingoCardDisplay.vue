@@ -1,11 +1,11 @@
 <template>
     <div class="bingo-card-display">
-        <div v-for="(row, rowIndex) in cardData.card" :key="rowIndex" class="bingo-card-row">
+        <div v-for="(row, rowIndex) in card" :key="rowIndex" class="bingo-card-row">
             <div
                 v-for="(num, numIndex) in row"
                 :key="numIndex"
                 class="bingo-card-number"
-                :class="{ selected: isNumberSelected(num) }"
+                :class="{ selected: isNumberSelected(num), empty: num === 0 }"
             >
                 {{ num === 0 ? '' : num }}
             </div>
@@ -14,22 +14,20 @@
 </template>
 
 <script>
-import { toRefs } from 'vue';
+import { computed } from 'vue';
 
 export default {
     name: 'BingoCardDisplay',
     props: {
-        cardData: Array,
+        card: Array,
+        selectedNumbers: Array,
     },
     setup(props) {
-        const { cardData } = toRefs(props);
-
         const isNumberSelected = (num) => {
-            return cardData.selectedNumbers.value.includes(num);
+            return props.selectedNumbers.includes(num);
         };
 
         return {
-            cardData,
             isNumberSelected,
         };
     },

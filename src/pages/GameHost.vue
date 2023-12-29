@@ -7,11 +7,14 @@
             :number="drawnNumber"
             :isAutomodeEnabled="isAutomodeEnabled"
             @draw-number="drawNumber"
-            @game-has-finished="finishGame"
-            @delete-game="deleteGame"
+            @finish-game="finishGame"
             class="p-2"
         />
-        <winner-announcement v-if="game.hasFinished" :winner="game.winners.bingo" />
+        <winner-announcement
+            v-if="game.hasFinished"
+            @delete-game="deleteGame"
+            :winner="game.winners.bingo"
+        />
         <base-slide>
             <host-numbers v-if="game" :game="game" :uuid="user.uuid" />
         </base-slide>
@@ -21,8 +24,8 @@
             :yellTitle="yellTitle"
             :yellData="yellData"
             @close="notValidWinner"
-            @notValid="notValidWinner"
-            @validateWinner="setValidWinner"
+            @not-valid="notValidWinner"
+            @validate-winner="setValidWinner"
         />
     </base-centre-container>
 </template>
@@ -47,6 +50,7 @@ export default {
         YellDialog,
     },
     props: ['id'],
+    emits: ['notValid', 'validateWinner', 'deleteGame', 'finishGame', 'drawNumber'],
     setup(props) {
         const store = useStore();
         const router = useRouter();
