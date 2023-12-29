@@ -8,14 +8,14 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
 
 const props = defineProps({
     multiple: {
         type: Boolean,
         required: false,
-        default: false
-    }
+        default: false,
+    },
 });
 
 const showSlide = ref(false);
@@ -23,12 +23,11 @@ const showSlide = ref(false);
 const toggleSlide = (e) => {
     e.target.blur();
     showSlide.value = !showSlide.value;
-}
+};
 </script>
 
-
 <style lang="scss" scoped>
-@import '@/scss/_variables.scss';
+@import '@scss/_variables.scss';
 
 .slide-wrapper {
     position: fixed;

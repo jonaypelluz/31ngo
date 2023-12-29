@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import helpers from '@/utils/helpers';
+import helpers from '@utils/helpers';
 
 export default {
     data() {

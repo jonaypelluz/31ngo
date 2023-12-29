@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <header>
             <router-link to="/">
-                <img class="main-logo" src="@/assets/logo-white.svg" alt="31ngo" />
+                <img class="main-logo" src="@assets/logo-white.svg" alt="31ngo" />
             </router-link>
         </header>
     </div>

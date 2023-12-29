@@ -9,6 +9,7 @@
             @draw-number="drawNumber"
             @game-has-finished="finishGame"
             @delete-game="deleteGame"
+            class="p-2"
         />
         <winner-announcement v-if="game.hasFinished" :winner="game.winners.bingo" />
         <base-slide>
@@ -27,16 +28,16 @@
 </template>
 
 <script>
-import HostControls from '@/components/game/HostControls.vue';
-import HostNumbers from '@/components/game/HostNumbers.vue';
-import WinnerAnnouncement from '@/components/game/WinnerAnnouncement.vue';
-import YellDialog from '@/components/game/YellDialog.vue';
 import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import Constants from '@/constants';
-import apiService from '@/services/apiService';
-import useSendWs from '@/utils/useSendWs';
+import Constants from '@constants';
+import HostControls from '@game/HostControls.vue';
+import HostNumbers from '@game/HostNumbers.vue';
+import WinnerAnnouncement from '@game/WinnerAnnouncement.vue';
+import YellDialog from '@game/YellDialog.vue';
+import apiService from '@services/apiService';
+import useSendWs from '@utils/useSendWs';
 
 export default {
     components: {
@@ -52,7 +53,6 @@ export default {
         const { sendWsMsg } = useSendWs(props.id);
 
         const totalNumbers = Constants.BINGO_CARD_TOTAL_NUMBERS;
-        const ws = ref(null);
         const players = ref({});
 
         const user = computed(() => store.state.user);
@@ -193,7 +193,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/scss/_variables.scss';
+@import '@scss/_variables.scss';
 
 b {
     font-weight: 800;

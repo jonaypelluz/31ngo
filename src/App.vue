@@ -6,11 +6,11 @@
 </template>
 
 <script>
-import BgBubbles from '@/components/UI/BgBubbles.vue';
-import TheHeader from '@/components/layout/TheHeader.vue';
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
+import BgBubbles from '@ui/BgBubbles.vue';
+import TheHeader from '@ui/TheHeader.vue';
 
 export default {
     components: {

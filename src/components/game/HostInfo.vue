@@ -41,7 +41,7 @@
 
 <script>
 import { computed } from 'vue';
-import Constants from '@/constants';
+import Constants from '@constants';
 
 export default {
     props: ['game'],

@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import Constants from '@/constants';
+import Constants from '@constants';
 
 export default {
     props: ['game', 'uuid'],

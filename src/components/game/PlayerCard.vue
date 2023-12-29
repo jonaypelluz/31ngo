@@ -39,8 +39,8 @@
 <script>
 import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
-import Constants from '@/constants';
-import BingoCard from '@/utils/bingoCard';
+import Constants from '@constants';
+import BingoCard from '@utils/bingoCard';
 
 export default {
     props: ['add-bingo-card'],
@@ -120,7 +120,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/scss/_variables.scss';
+@import '@scss/_variables.scss';
 
 .bingo-card {
     max-width: 76%;

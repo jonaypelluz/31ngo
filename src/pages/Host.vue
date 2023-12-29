@@ -30,11 +30,7 @@
                     Copia el código de la partida y envíalo a quien quieras que participe
                     <span class="d-block mt-2 mb-3">
                         <span class="black">{{ game.hash }}</span>
-                        <img
-                            class="ml-3 copy-svg"
-                            src="@/assets/icons/copy.svg"
-                            @click="copyHash"
-                        />
+                        <img class="ml-3 copy-svg" src="@assets/icons/copy.svg" @click="copyHash" />
                         <div class="black mt-2">{{ copiedText }}</div>
                     </span>
                     <div v-if="mode === 'private'">
@@ -54,9 +50,9 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import Constants from '@/constants';
-import apiService from '@/services/apiService';
-import helpers from '@/utils/helpers';
+import Constants from '@constants';
+import apiService from '@services/apiService';
+import helpers from '@utils/helpers';
 
 export default {
     setup() {

@@ -1,10 +1,10 @@
+import { createRouter, createWebHistory } from 'vue-router';
 import GameHost from './pages/GameHost.vue';
 import GamePlayer from './pages/GamePlayer.vue';
 import Home from './pages/Home.vue';
 import Host from './pages/Host.vue';
 import NotFound from './pages/NotFound.vue';
 import Player from './pages/Player.vue';
-import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
     history: createWebHistory(),

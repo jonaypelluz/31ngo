@@ -13,31 +13,30 @@
         <base-dialog :show="showNameForm">
             Añade un nombre de jugador
             <input v-model="userName" type="text" placeholder="Nombre" class="form-control" />
-            <span v-if="showNameError" class="text-danger"> Tienes que añadir un nombre </span>
+            <span v-if="showNameError" class="text-danger">Tienes que añadir un nombre</span>
             <template #actions>
                 <base-button @click="addBingoCard">Enviar</base-button>
             </template>
         </base-dialog>
-        <base-dialog :show="yell && yell.type !== null">
+        <base-dialog :show="yell && yell.type !== null" fixed>
             <div class="yell-msg text-center">
                 <p>{{ yellTitle }}</p>
                 <div class="spinner-border text-info" role="status">
                     <span class="sr-only">Comprobando...</span>
                 </div>
             </div>
-            <template #actions></template>
         </base-dialog>
     </base-centre-container>
 </template>
 
 <script>
-import PlayerActions from '@/components/game/PlayerActions.vue';
-import PlayerCard from '@/components/game/PlayerCard.vue';
 import { computed, onMounted, ref, toRaw } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import apiService from '@/services/apiService';
-import useSendWs from '@/utils/useSendWs';
+import PlayerActions from '@game/PlayerActions.vue';
+import PlayerCard from '@game/PlayerCard.vue';
+import apiService from '@services/apiService';
+import useSendWs from '@utils/useSendWs';
 
 export default {
     components: {
@@ -176,8 +175,6 @@ export default {
             showNameForm,
             showNameError,
             userName,
-            userData,
-            user,
             game,
             yell,
             drawnNumber,
@@ -188,7 +185,6 @@ export default {
             addName,
             addBingoCard,
             markNumbers,
-            sendWsMsg,
             yellAction,
         };
     },

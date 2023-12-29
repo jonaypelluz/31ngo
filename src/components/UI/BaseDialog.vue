@@ -21,7 +21,7 @@
     </teleport>
 </template>
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineEmits, defineProps } from 'vue';
 
 const props = defineProps({
     show: {
@@ -49,9 +49,8 @@ const tryClose = () => {
 };
 </script>
 
-
 <style lang="scss" scoped>
-@import '@/scss/_variables.scss';
+@import '@scss/_variables.scss';
 
 .backdrop {
     position: fixed;

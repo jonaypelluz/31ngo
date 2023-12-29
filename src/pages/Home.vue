@@ -1,6 +1,6 @@
 <template>
     <base-centre-container>
-        <h1><img class="logo mt-4 mb-2" src="@/assets/logo.svg" alt="31ngo" /></h1>
+        <h1><img class="logo mt-4 mb-2" src="@assets/logo.svg" alt="31ngo" /></h1>
         <p class="description">
             Para jugar al <b>BINGO</b>, primero se debe establecer una partida como anfitrión, si
             aún no existe. Luego, usando el código generado, se puede unir a la partida desde otro
@@ -15,8 +15,8 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import apiService from '@/services/apiService';
-import helpers from '@/utils/helpers';
+import apiService from '@services/apiService';
+import helpers from '@utils/helpers';
 
 export default {
     setup() {

@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import ModeSwitcher from './ModeSwitcher.vue';
-import HostInfo from '@/components/game/HostInfo.vue';
 import { computed, onUnmounted, ref, watch } from 'vue';
-import Constants from '@/constants';
+import Constants from '@constants';
+import HostInfo from '@game/HostInfo.vue';
+import ModeSwitcher from './ModeSwitcher.vue';
 
 export default {
     components: {

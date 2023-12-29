@@ -2,7 +2,7 @@
     <div class="player-drawn-number">
         <span v-if="drawnNumber" class="drawn-number">
             <router-link to="/">
-                <img class="main-logo" src="@/assets/logo-white.svg" alt="31ngo" />
+                <img class="main-logo" src="@assets/logo-white.svg" alt="31ngo" />
             </router-link>
             <span>{{ drawnNumber }}</span>
         </span>
@@ -57,7 +57,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/scss/_variables.scss';
+@import '@scss/_variables.scss';
 
 .player-drawn-number {
     position: relative;

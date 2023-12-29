@@ -1,4 +1,4 @@
-import { wsService } from '@/services/WebSocketService';
+import { wsService } from '@services/webSocketService';
 
 const getDefaultState = () => {
     return {
@@ -170,13 +170,16 @@ const actions = {
         });
 
         wsService.on('ws-connected', (status) => {
-            commit('setWsConnected', status);
+            dispatch('setWsConnected', status);
         });
 
         wsService.on('ws-error', (error) => {
             console.error('WebSocket Error:', error);
-            commit('setWsConnected', false);
+            dispatch('setWsConnected', false);
         });
+    },
+    setWsConnected(context, status) {
+        context.commit('updateWsConnected', status);
     },
     sendWSMessage({ state }, data) {
         if (state.wsConnected) {

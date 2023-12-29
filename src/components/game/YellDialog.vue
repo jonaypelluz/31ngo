@@ -7,15 +7,15 @@
             <bingo-card-display v-if="yellData" :cardData="yellData"></bingo-card-display>
         </div>
         <template #actions>
-            <base-button class="black" mode="flat" @click="handleNotValid"> No válido </base-button>
-            <base-button class="ml-5" @click="handleValid"> Válido </base-button>
+            <base-button class="black" mode="flat" @click="handleNotValid">No válido</base-button>
+            <base-button class="ml-5" @click="handleValid">Válido</base-button>
         </template>
     </base-dialog>
 </template>
 
 <script>
-import BingoCardDisplay from './BingoCardDisplay.vue';
 import { toRefs } from 'vue';
+import BingoCardDisplay from '@game/BingoCardDisplay.vue';
 
 export default {
     name: 'YellDialog',

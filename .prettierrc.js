@@ -9,7 +9,7 @@ module.exports = {
     bracketSpacing: true,
     arrowParens: 'always',
     plugins: [require.resolve('@trivago/prettier-plugin-sort-imports')],
-    importOrder: ['vue', '^(?!vue)\\w+$', '<THIRD_PARTY_MODULES>', '^[./]'],
+    importOrder: ["^vue(.*)?", "^@constants", "^@game/(.*)$", "^@services/(.*)$", "^@ui/(.*)$", "^@utils/(.*)$", "^[./]"],
     importOrderSeparation: false,
     importOrderSortSpecifiers: true,
 };

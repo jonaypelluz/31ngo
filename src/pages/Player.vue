@@ -48,8 +48,8 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
-import Constants from '@/constants';
-import apiService from '@/services/apiService';
+import Constants from '@constants';
+import apiService from '@services/apiService';
 
 export default {
     setup() {
