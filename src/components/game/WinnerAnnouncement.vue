@@ -24,9 +24,9 @@ export default {
         };
 
         return {
-            deleteGame
-        }
-    }
+            deleteGame,
+        };
+    },
 };
 </script>
 
