@@ -10,6 +10,7 @@
 import { ref } from 'vue';
 
 export default {
+    name: 'BgBubbles',
     setup() {
         const count = 20;
         const numbers = ref([]);

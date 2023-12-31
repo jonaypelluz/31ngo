@@ -30,6 +30,7 @@ import HostInfo from '@game/HostInfo.vue';
 import ModeSwitcher from './ModeSwitcher.vue';
 
 export default {
+    name: 'HostControls',
     components: {
         HostInfo,
         ModeSwitcher,

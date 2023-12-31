@@ -44,7 +44,7 @@ export default {
 <style lang="scss" scoped>
 .logo {
     width: 100%;
-    max-width: 6em;
+    max-width: 4em;
 }
 
 .description {

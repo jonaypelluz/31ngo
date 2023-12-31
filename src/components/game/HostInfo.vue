@@ -43,6 +43,7 @@ import { computed } from 'vue';
 import Constants from '@constants';
 
 export default {
+    name: 'HostInfo',
     props: {
         game: {
             type: Object,

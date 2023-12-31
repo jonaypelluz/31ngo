@@ -43,6 +43,7 @@ import Constants from '@constants';
 import BingoCard from '@utils/bingoCard';
 
 export default {
+    name: 'PlayerCard',
     emits: ['addBingoCard'],
     setup(_, { emit }) {
         const store = useStore();

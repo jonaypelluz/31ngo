@@ -1,7 +1,7 @@
 <template>
-    <div v-if="winner" class="winner-announcement">
+    <div class="winner-announcement">
         <h3>¡La partida ha finalizado!</h3>
-        <div>
+        <div v-if="winner">
             <h2 class="mb-5">El ganador uuid es:</h2>
             <h1>{{ winner }}</h1>
         </div>

@@ -156,6 +156,7 @@ export default {
         const deleteGame = async () => {
             await apiService.deleteGame(game.value.hash, user.value.uuid);
             store.dispatch('gam/resetGame');
+            router.replace('/');
         };
 
         const setValidWinner = async () => {

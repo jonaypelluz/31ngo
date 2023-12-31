@@ -34,6 +34,7 @@
 
 <script>
 export default {
+    name: 'PlayerActions',
     props: {
         game: {
             type: Object,

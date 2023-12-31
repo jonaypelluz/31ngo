@@ -19,6 +19,7 @@
 import { computed, toRefs } from 'vue';
 
 export default {
+    name: 'ModeSwitcher',
     props: {
         automatic: {
             type: Boolean,

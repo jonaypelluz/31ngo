@@ -10,6 +10,7 @@
 import { ref } from 'vue';
 
 export default {
+    name: 'BaseSlide',
     props: {
         multiple: {
             type: Boolean,

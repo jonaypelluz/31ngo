@@ -12,6 +12,7 @@
 import { computed } from 'vue';
 
 export default {
+    name: 'BaseButton',
     props: {
         mode: {
             type: String,

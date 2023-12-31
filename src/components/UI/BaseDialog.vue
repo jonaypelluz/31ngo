@@ -20,34 +20,40 @@
         </transition>
     </teleport>
 </template>
-<script setup>
-import { defineEmits, defineProps } from 'vue';
 
-const props = defineProps({
-    show: {
-        type: Boolean,
-        required: true,
-        default: false,
+<script>
+export default {
+    name: 'BaseDialog',
+    props: {
+        show: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        title: {
+            type: String,
+            required: false,
+            default: null,
+        },
+        fixed: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     },
-    title: {
-        type: String,
-        required: false,
-        default: null,
-    },
-    fixed: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-});
+    emits: ['close'],
+    setup(props, { emit }) {
+        const tryClose = () => {
+            if (props.fixed) {
+                return;
+            }
+            emit('close');
+        };
 
-const emit = defineEmits(['close']);
-
-const tryClose = () => {
-    if (props.fixed) {
-        return;
-    }
-    emit('close');
+        return {
+            tryClose,
+        };
+    },
 };
 </script>
 

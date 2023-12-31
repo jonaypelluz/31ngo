@@ -99,10 +99,10 @@ export default {
         };
 
         const copyHash = () => {
-            if (navigator) {
-                navigator.clipboard.writeText(game.value.hash);
+            const hash = game.value.hash;
+            navigator.clipboard.writeText(hash).then(() => {
                 copiedText.value = '¡Copiado!';
-            }
+            });
         };
 
         const increasePlayers = () => {
@@ -169,7 +169,7 @@ label {
 }
 
 .description {
-    max-width: 460px;
+    max-width: 700px;
     margin: 0 auto 1.5rem;
 
     b {

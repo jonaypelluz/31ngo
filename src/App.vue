@@ -75,7 +75,7 @@ input[type='number'] {
 }
 
 .form-wrapper {
-    max-width: 40%;
+    max-width: 60%;
     margin: 0 auto;
 }
 
