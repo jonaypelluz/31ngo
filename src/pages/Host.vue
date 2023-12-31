@@ -99,8 +99,10 @@ export default {
         };
 
         const copyHash = () => {
-            navigator.clipboard.writeText(game.value.hash);
-            copiedText.value = '¡Copiado!';
+            if (navigator) {
+                navigator.clipboard.writeText(game.value.hash);
+                copiedText.value = '¡Copiado!';
+            }
         };
 
         const increasePlayers = () => {
