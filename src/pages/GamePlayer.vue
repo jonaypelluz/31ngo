@@ -43,7 +43,12 @@ export default {
         PlayerCard,
         PlayerActions,
     },
-    props: ['id'],
+    props: {
+        id: {
+            type: String,
+            default: null,
+        },
+    },
     setup(props) {
         const store = useStore();
         const router = useRouter();

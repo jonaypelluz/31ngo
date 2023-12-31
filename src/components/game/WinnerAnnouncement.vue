@@ -15,12 +15,13 @@ export default {
     props: {
         winner: {
             type: String,
-            required: true,
+            default: null,
         },
     },
+    emits: ['deleteGame'],
     setup(_, { emit }) {
         const deleteGame = () => {
-            emit('delete-game');
+            emit('deleteGame');
         };
 
         return {

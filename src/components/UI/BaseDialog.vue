@@ -27,10 +27,12 @@ const props = defineProps({
     show: {
         type: Boolean,
         required: true,
+        default: false,
     },
     title: {
         type: String,
         required: false,
+        default: null,
     },
     fixed: {
         type: Boolean,

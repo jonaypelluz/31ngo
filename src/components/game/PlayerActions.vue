@@ -34,24 +34,41 @@
 
 <script>
 export default {
-    props: [
-        'yell-action',
-        'game',
-        'drawn-number',
-        'mark-numbers',
-        'show-full-house-btn',
-        'show-line-btn',
-        'winner',
-    ],
-    methods: {
-        yell(e, type) {
-            e.target.blur();
-            this.$emit('yell-action', type);
+    props: {
+        game: {
+            type: Object,
+            default: null,
         },
-        markNums(e) {
-            e.target.blur();
-            this.$emit('mark-numbers');
+        drawnNumber: {
+            type: Number,
+            default: null,
         },
+        showFullHouseBtn: {
+            type: Boolean,
+            default: false,
+        },
+        showLineBtn: {
+            type: Boolean,
+            default: false,
+        },
+        winner: {
+            type: String,
+            default: null,
+        },
+    },
+    emits: ['yellAction', 'markNumbers'],
+    setup(_, { emit }) {
+        const yell = (e, type) => {
+            e.target.blur();
+            emit('yellAction', type);
+        };
+
+        const markNums = (e) => {
+            e.target.blur();
+            emit('markNumbers');
+        };
+
+        return { yell, markNums };
     },
 };
 </script>

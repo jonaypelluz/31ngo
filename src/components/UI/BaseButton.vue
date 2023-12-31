@@ -8,34 +8,36 @@
         <i v-if="mode === 'animation'" class="icon fas" :class="icon"></i>
     </router-link>
 </template>
-<script setup>
+<script>
 import { computed } from 'vue';
 
-const props = defineProps({
-    mode: {
-        type: String,
-        required: false,
-        default: null,
+export default {
+    props: {
+        mode: {
+            type: String,
+            default: null,
+        },
+        link: {
+            type: Boolean,
+            default: false,
+        },
+        to: {
+            type: String,
+            default: '/',
+        },
+        ico: {
+            type: String,
+            default: null,
+        },
     },
-    link: {
-        type: Boolean,
-        required: false,
-        default: false,
-    },
-    to: {
-        type: String,
-        required: false,
-        default: '/',
-    },
-    ico: {
-        type: String,
-        required: false,
-    },
-});
+    setup(props) {
+        const icon = computed(() => {
+            return props.ico || 'fa-arrow-alt-circle-right';
+        });
 
-const icon = computed(() => {
-    return props.ico || 'fa-arrow-alt-circle-right';
-});
+        return { icon };
+    },
+};
 </script>
 
 <style lang="scss" scoped>

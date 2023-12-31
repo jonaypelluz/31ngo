@@ -34,8 +34,25 @@ export default {
         HostInfo,
         ModeSwitcher,
     },
-    props: ['game', 'numbers', 'number', 'isAutomodeEnabled'],
-    emits: ['setBingoMode'],
+    props: {
+        game: {
+            type: Object,
+            default: null,
+        },
+        maxDrawnNumbers: {
+            type: Number,
+            default: null,
+        },
+        number: {
+            type: Number,
+            default: null,
+        },
+        isAutomodeEnabled: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    emits: ['setBingoMode', 'drawNumber', 'finishGame'],
     setup(props, { emit }) {
         const timer = ref(10);
         const showTimer = ref(true);
@@ -44,7 +61,7 @@ export default {
         let bingoInterval = null;
 
         const showStartBtn = computed(() => {
-            return props.game.drawnNumbers.length < props.numbers;
+            return props.game.drawnNumbers.length < props.maxDrawnNumbers;
         });
 
         const shownNumber = computed(() => {
@@ -94,10 +111,10 @@ export default {
         };
 
         const drawANumber = () => {
-            emit('draw-number');
+            emit('drawNumber');
             bingoInterval = setInterval(() => {
-                emit('draw-number');
-                if (props.game.drawnNumbers.length >= props.numbers) {
+                emit('drawNumber');
+                if (props.game.drawnNumbers.length >= props.maxDrawnNumbers) {
                     setTimeout(() => {
                         finishGame();
                     }, 2000);
@@ -107,13 +124,13 @@ export default {
 
         const finishGame = () => {
             stopAutomaticMode();
-            emit('finish-game');
+            emit('finishGame');
         };
 
         const drawTheNumber = (e) => {
             stopAutomaticMode();
             e.target.blur();
-            emit('draw-number');
+            emit('drawNumber');
         };
 
         onUnmounted(() => {

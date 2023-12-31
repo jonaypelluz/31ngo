@@ -24,7 +24,16 @@
 import Constants from '@constants';
 
 export default {
-    props: ['game', 'uuid'],
+    props: {
+        game: {
+            type: Object,
+            default: null,
+        },
+        uuid: {
+            type: String,
+            default: '',
+        },
+    },
     computed: {
         rows() {
             const numbers = this.allNumbers();

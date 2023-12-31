@@ -14,13 +14,17 @@
 </template>
 
 <script>
-import { computed } from 'vue';
-
 export default {
     name: 'BingoCardDisplay',
     props: {
-        card: Array,
-        selectedNumbers: Array,
+        card: {
+            type: Array,
+            default: () => [],
+        },
+        selectedNumbers: {
+            type: Array,
+            default: () => [],
+        },
     },
     setup(props) {
         const isNumberSelected = (num) => {

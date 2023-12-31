@@ -3,17 +3,17 @@
         <host-controls
             v-if="!game.hasFinished"
             :game="game"
-            :numbers="totalNumbers"
+            :max-drawn-numbers="maxDrawnNumbers"
             :number="drawnNumber"
-            :isAutomodeEnabled="isAutomodeEnabled"
+            :is-automode-enabled="isAutomodeEnabled"
+            class="p-2"
             @draw-number="drawNumber"
             @finish-game="finishGame"
-            class="p-2"
         />
         <winner-announcement
             v-if="game.hasFinished"
-            @delete-game="deleteGame"
             :winner="game.winners.bingo"
+            @delete-game="deleteGame"
         />
         <base-slide>
             <host-numbers v-if="game" :game="game" :uuid="user.uuid" />
@@ -21,8 +21,8 @@
         <yell-dialog
             v-if="showYell"
             :show="showYell"
-            :yellTitle="yellTitle"
-            :yellData="yellData"
+            :yell-title="yellTitle"
+            :yell-data="yellData"
             @close="notValidWinner"
             @not-valid="notValidWinner"
             @validate-winner="setValidWinner"
@@ -49,14 +49,18 @@ export default {
         HostNumbers,
         YellDialog,
     },
-    props: ['id'],
-    emits: ['notValid', 'validateWinner', 'deleteGame', 'finishGame', 'drawNumber'],
+    props: {
+        id: {
+            type: String,
+            default: null,
+        },
+    },
     setup(props) {
         const store = useStore();
         const router = useRouter();
         const { sendWsMsg } = useSendWs(props.id);
 
-        const totalNumbers = Constants.BINGO_CARD_TOTAL_NUMBERS;
+        const maxDrawnNumbers = Constants.BINGO_CARD_TOTAL_NUMBERS;
         const players = ref({});
 
         const user = computed(() => store.state.user);
@@ -69,7 +73,7 @@ export default {
         const showYell = computed(() => yell.value.type !== null);
         const yellCard = ref(null);
 
-        watch([showYell, yell], async ([newShowYell, newYell], [_, oldYell]) => {
+        watch([showYell, yell], async ([newShowYell, newYell], [, oldYell]) => {
             if (newShowYell && newYell && newYell.uuid !== oldYell.uuid) {
                 if (!players.value[newYell.uuid]) {
                     try {
@@ -180,7 +184,7 @@ export default {
         return {
             game,
             user,
-            totalNumbers,
+            maxDrawnNumbers,
             drawnNumber,
             isAutomodeEnabled,
             drawNumber,

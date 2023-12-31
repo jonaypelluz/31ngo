@@ -7,7 +7,7 @@
             <bingo-card-display
                 v-if="yellData"
                 :card="card"
-                :selectedNumbers="selectedNumbers"
+                :selected-numbers="selectedNumbers"
             ></bingo-card-display>
         </div>
         <template #actions>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { computed, toRefs } from 'vue';
+import { computed } from 'vue';
 import BingoCardDisplay from '@game/BingoCardDisplay.vue';
 
 export default {
@@ -27,22 +27,30 @@ export default {
         BingoCardDisplay,
     },
     props: {
-        show: Boolean,
-        yellTitle: String,
-        yellData: Object,
+        show: {
+            type: Boolean,
+            default: false,
+        },
+        yellTitle: {
+            type: String,
+            default: null,
+        },
+        yellData: {
+            type: Object,
+            default: null,
+        },
     },
+    emits: ['notValid', 'validateWinner', 'close'],
     setup(props, { emit }) {
-        const { show, yellTitle, yellData } = toRefs(props);
-
-        const card = computed(() => yellData.value.card);
-        const selectedNumbers = computed(() => yellData.value.selectedNumbers);
+        const card = computed(() => props.yellData.card);
+        const selectedNumbers = computed(() => props.yellData.selectedNumbers);
 
         const handleNotValid = () => {
-            emit('not-valid');
+            emit('notValid');
         };
 
         const handleValid = () => {
-            emit('validate-winner');
+            emit('validateWinner');
         };
 
         const handleClose = () => {
@@ -50,9 +58,6 @@ export default {
         };
 
         return {
-            show,
-            yellTitle,
-            yellData,
             card,
             selectedNumbers,
             handleNotValid,

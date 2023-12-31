@@ -77,7 +77,7 @@ export default {
                     game.value = theGame;
                     checkIfExists();
                 } else {
-                    error.value = "No se ha encontrado la partida";
+                    error.value = 'No se ha encontrado la partida';
                 }
             } catch (err) {
                 console.error('Error fetching game:', err);
@@ -87,7 +87,10 @@ export default {
         };
 
         const sendGameCode = async () => {
-            if (game.value.codes.length !== game.value.players.length && game.value.codes.includes(gameCode.value)) {
+            if (
+                game.value.codes.length !== game.value.players.length &&
+                game.value.codes.includes(gameCode.value)
+            ) {
                 await apiService.addPlayerUsedCode(
                     game.value.hash,
                     gameCode.value,

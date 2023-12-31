@@ -43,7 +43,7 @@ import Constants from '@constants';
 import BingoCard from '@utils/bingoCard';
 
 export default {
-    props: ['add-bingo-card'],
+    emits: ['addBingoCard'],
     setup(_, { emit }) {
         const store = useStore();
         const isBingoCardAssigned = ref(false);
@@ -74,7 +74,7 @@ export default {
 
         const assignBingoCard = () => {
             isBingoCardAssigned.value = true;
-            emit('add-bingo-card', {
+            emit('addBingoCard', {
                 numbers: numbers.value,
                 bingoCard: bingoCard.value,
             });

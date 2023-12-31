@@ -6,23 +6,26 @@
         <slot></slot>
     </div>
 </template>
+<script>
+import { ref } from 'vue';
 
-<script setup>
-import { defineProps, ref } from 'vue';
-
-const props = defineProps({
-    multiple: {
-        type: Boolean,
-        required: false,
-        default: false,
+export default {
+    props: {
+        multiple: {
+            type: Boolean,
+            default: false,
+        },
     },
-});
+    setup() {
+        const showSlide = ref(false);
 
-const showSlide = ref(false);
+        const toggleSlide = (e) => {
+            e.target.blur();
+            showSlide.value = !showSlide.value;
+        };
 
-const toggleSlide = (e) => {
-    e.target.blur();
-    showSlide.value = !showSlide.value;
+        return { showSlide, toggleSlide };
+    },
 };
 </script>
 

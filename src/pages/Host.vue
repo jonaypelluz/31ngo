@@ -10,15 +10,15 @@
                     partida privado para cada uno de ellos. Una vez que el anfitrión empieza la
                     partida no se podrá acceder a ella.
                 </p>
-                <base-button mode="flat" @click="chooseGameMode('private')"> Privado </base-button>
-                <base-button class="ml-3" @click="chooseGameMode('public')"> Público </base-button>
+                <base-button mode="flat" @click="chooseGameMode('private')">Privado</base-button>
+                <base-button class="ml-3" @click="chooseGameMode('public')">Público</base-button>
             </div>
             <div v-if="mode === 'private'">
                 <label>Introduce cantidad de jugadores</label>
                 <div class="controls">
-                    <base-button mode="flat" @click="decreasePlayers"> - </base-button>
+                    <base-button mode="flat" @click="decreasePlayers">-</base-button>
                     <span class="form-control">{{ players }}</span>
-                    <base-button mode="flat" class="pb-0" @click="increasePlayers"> + </base-button>
+                    <base-button mode="flat" class="pb-0" @click="increasePlayers">+</base-button>
                 </div>
             </div>
             <base-button v-if="showCreateBtn" mode="animation" @click="createGame">

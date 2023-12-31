@@ -16,21 +16,44 @@
 </template>
 
 <script>
+import { computed, toRefs } from 'vue';
+
 export default {
-    props: ['automatic', 'showTimer', 'timer'],
-    emits: ['set-bingo-mode'],
-    computed: {
-        automaticLabel() {
-            return !this.automatic ? 'Manual' : 'Automático';
+    props: {
+        automatic: {
+            type: Boolean,
+            default: false,
         },
-        showTimerSeconds() {
-            return this.automatic && this.showTimer;
+        showTimer: {
+            type: Boolean,
+            default: false,
+        },
+        timer: {
+            type: Number,
+            default: null,
         },
     },
-    methods: {
-        setBingoMode() {
-            this.$emit('set-bingo-mode', !this.automatic);
-        },
+    emits: ['setBingoMode'],
+    setup(props, { emit }) {
+        const { automatic, showTimer } = toRefs(props);
+
+        const automaticLabel = computed(() => {
+            return !automatic.value ? 'Manual' : 'Automático';
+        });
+
+        const showTimerSeconds = computed(() => {
+            return automatic.value && showTimer.value;
+        });
+
+        const setBingoMode = () => {
+            emit('setBingoMode', !automatic.value);
+        };
+
+        return {
+            automaticLabel,
+            showTimerSeconds,
+            setBingoMode,
+        };
     },
 };
 </script>
