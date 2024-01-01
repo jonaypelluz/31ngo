@@ -54,8 +54,8 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: ops/docker/go/go31ngo
-          target: /home/${{ secrets.SSH_USERNAME }}/go/
+          source: ops/docker/go/*
+          target: /home/${{ secrets.SSH_USERNAME }}/
 
   deploy_app:
     runs-on: ubuntu-latest
@@ -103,4 +103,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: ws/*
-          target: /home/${{ secrets.SSH_USERNAME }}/ws/
+          target: /home/${{ secrets.SSH_USERNAME }}/
