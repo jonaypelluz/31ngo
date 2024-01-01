@@ -48,6 +48,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: package31ngo
+          path: dist/
       - name: Display structure of downloaded files
         run: ls -R
       - name: Copy dist files to server
@@ -58,5 +59,5 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: 31ngo/dist/*
+          source: dist/*
           target: /home/${{ secrets.SSH_USERNAME }}/app/
