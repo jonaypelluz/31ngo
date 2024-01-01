@@ -1,4 +1,4 @@
-name: Deploy Jueletrado to GitHub Pages
+name: Deploy 31ngo to server
 
 on:
   push:
@@ -60,4 +60,4 @@ jobs:
                 User ${{ secrets.SSH_USERNAME }}
                 IdentityFile ~/.ssh/${{ secrets.SSH_KEY_NAME }}
       - name: SCP content to server
-        run: scp ./dist/ target:app/
+        run: scp ./dist/ ${{ secrets.SSH_IP }}:/home/${{ secrets.SSH_USERNAME }}/app/
