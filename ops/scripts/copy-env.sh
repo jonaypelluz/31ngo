@@ -1,10 +1,12 @@
 #!/bin/sh
-if [ "$1" = "ws" ]; then
+ENV="$1"
+
+if [ "$2" = "ws" ]; then
     TARGET_DIR="./ws"
-    ENV_FILE="ops/docker/ws/.env.development"
+    ENV_FILE="ops/docker/ws/.env.$ENV"
 else
     TARGET_DIR="."
-    ENV_FILE="ops/docker/app/.env.development"
+    ENV_FILE="ops/docker/app/.env.$ENV"
 fi
 
 if [ -f "$TARGET_DIR/.env" ]; then
@@ -12,3 +14,4 @@ if [ -f "$TARGET_DIR/.env" ]; then
 fi
 
 cp -n "$ENV_FILE" "$TARGET_DIR/.env"
+

@@ -9,8 +9,8 @@ DOCKER_COMPOSE := --env-file .env -p ${PROJECT_NAME} -f ops/docker/docker-compos
 build: hosts copy-env delete-mongodb-data compose
 	
 copy-env:
-	sh ops/scripts/copy-env.sh
-	sh ops/scripts/copy-env.sh ws
+	sh ops/scripts/copy-env.sh development
+	sh ops/scripts/copy-env.sh development ws
 
 compose:
 	docker-compose ${DOCKER_COMPOSE} up -d --build
