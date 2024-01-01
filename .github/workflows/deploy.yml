@@ -48,11 +48,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: package31ngo
-      - name: copy file to server
+      - name: Copy dist files to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_IP }}
           username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: ./dist/*
