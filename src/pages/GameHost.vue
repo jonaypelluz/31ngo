@@ -1,258 +1,210 @@
 <template>
-  <base-centre-container v-if="!isLoading">
-    <host-controls
-      v-if="!game.hasFinished"
-      :game="game"
-      :numbers="totalNumbers"
-      :number="drawnNumber"
-      :automode="automode"
-      @draw-number="drawNumber"
-      @game-has-finished="finishGame"
-    />
-    <div v-else>
-      <h3>¡La partida ha finalizado!</h3>
-      <div v-if="winner">
-        <h2 class="mb-5">El ganador es:</h2>
-        <h1>
-          <b>{{ winner }}</b>
-        </h1>
-      </div>
-    </div>
-    <base-slide>
-      <host-numbers :game="game" :uuid="user.uuid" />
-    </base-slide>
-    <base-slide multiple="true">
-      <host-info :game="game" />
-    </base-slide>
-    <base-dialog :show="showYell" :title="yellTitle" @close="notValidWinner()">
-      <div>
-        <p>
-          Nombre del jugador: <b>{{ game.players[yell.uuid].name }}</b>
-        </p>
-        <div class="user-bingo-card-wrapper" v-if="yellCard">
-          <div
-            class="user-bingo-card"
-            v-for="(row, idx) in yellCard"
-            :key="idx"
-          >
-            <div
-              class="user-number"
-              :class="{
-                empty: num === 0,
-                selected: game.drawnNumbers.includes(num),
-              }"
-              v-for="num in row"
-              :key="num"
-            >
-              {{ num === 0 ? '' : num }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <template #actions>
-        <base-button class="black" mode="flat" @click="notValidWinner()">
-          No válido
-        </base-button>
-        <base-button class="ml-5" @click="setValidWinner()">
-          Válido
-        </base-button>
-      </template>
-    </base-dialog>
-  </base-centre-container>
+    <base-centre-container>
+        <host-controls
+            v-if="!game.hasFinished"
+            :game="game"
+            :max-drawn-numbers="maxDrawnNumbers"
+            :number="drawnNumber"
+            :is-automode-enabled="isAutomodeEnabled"
+            class="p-2"
+            @draw-number="drawNumber"
+            @finish-game="finishGame"
+        />
+        <winner-announcement
+            v-if="game.hasFinished"
+            :winner="game.winners.bingo"
+            @delete-game="deleteGame"
+        />
+        <base-slide>
+            <host-numbers v-if="game" :game="game" :uuid="user.uuid" />
+        </base-slide>
+        <yell-dialog
+            v-if="showYell"
+            :show="showYell"
+            :yell-title="yellTitle"
+            :yell-data="yellData"
+            @close="notValidWinner"
+            @not-valid="notValidWinner"
+            @validate-winner="setValidWinner"
+        />
+    </base-centre-container>
 </template>
 
 <script>
-import Constants from '@/constants.js';
-import HostControls from '@/components/game/HostControls';
-import HostInfo from '@/components/game/HostInfo';
-import HostNumbers from '@/components/game/HostNumbers';
-import fb from '@/services/firebase/fb.js';
-import { mapState } from 'vuex';
-import { wsManager } from '@/services/ws/webSocketManager';
+import { computed, onMounted, ref, toRaw, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import Constants from '@constants';
+import HostControls from '@game/HostControls.vue';
+import HostNumbers from '@game/HostNumbers.vue';
+import WinnerAnnouncement from '@game/WinnerAnnouncement.vue';
+import YellDialog from '@game/YellDialog.vue';
+import apiService from '@services/apiService';
+import useSendWs from '@utils/useSendWs';
 
 export default {
-  components: {
-    HostInfo,
-    HostControls,
-    HostNumbers,
-  },
-  props: ['id'],
-  data() {
-    return {
-      totalNumbers: Constants.BINGO_CARD_TOTAL_NUMBERS,
-      isLoading: false,
-      ws: null,
-    };
-  },
-  computed: {
-    ...mapState(['user']),
-    ...mapState('gam', ['yell', 'game']),
-    drawnNumber() {
-      return this.$store.getters['gam/getLastDrawnNumber'];
+    components: {
+        WinnerAnnouncement,
+        HostControls,
+        HostNumbers,
+        YellDialog,
     },
-    automode() {
-      return this.yell.type !== null ? 'stop' : null;
+    props: {
+        id: {
+            type: String,
+            default: null,
+        },
     },
-    showYell() {
-      return this.yell.type !== null;
-    },
-    yellCard() {
-      let card = null;
-      if (this.showYell) {
-        const player = this.game.players[this.yell.uuid];
-        card = player.bingoCard;
-      }
-      return card;
-    },
-    yellTitle() {
-      return this.yell
-        ? `¡Comprobar resultados de ${
-            this.yell.type !== 'line' ? 'bingo' : 'línea'
-          }!`
-        : '';
-    },
-    winner() {
-      return this.game.players[this.game.winners.bingo].name;
-    },
-  },
-  methods: {
-    closeYell() {
-      this.$store.dispatch('gam/resetYell');
-    },
-    async drawNumber() {
-      let loop = true;
-      while (loop) {
-        let randNum =
-          Math.floor(Math.random() * Constants.BINGO_CARD_TOTAL_NUMBERS) + 1;
-        if (!this.game.drawnNumbers.includes(randNum)) {
-          this.$store.dispatch('gam/addDrawnNumber', randNum);
-          await fb.addDrawnNumbers(this.game);
-          break;
-        }
-        if (
-          this.game.drawnNumbers.length >= Constants.BINGO_CARD_TOTAL_NUMBERS
-        ) {
-          break;
-        }
-      }
+    setup(props) {
+        const store = useStore();
+        const router = useRouter();
+        const { sendWsMsg } = useSendWs(props.id);
 
-      this.sendWsMsg({
-        type: 'num',
-        num: this.drawnNumber,
-        uuid: this.user.uuid,
-      });
+        const maxDrawnNumbers = Constants.BINGO_CARD_TOTAL_NUMBERS;
+        const players = ref({});
 
-      this.isGameStarted();
-    },
-    async finishGame() {
-      await fb.hasFinished(this.game.hash);
-      this.$store.dispatch('gam/hasFinished');
-      this.sendWsMsg({
-        type: 'finish',
-        uuid: this.user.uuid,
-      });
-    },
-    async getGameInfo() {
-      this.isLoading = true;
+        const user = computed(() => store.state.user);
+        const game = computed(() => store.state.gam.game);
 
-      // Get game
-      const theGame = await fb.getGame(this.id);
-      this.$store.dispatch('gam/updateGame', theGame);
+        const drawnNumber = computed(() => store.getters['gam/getLastDrawnNumber']);
+        const isAutomodeEnabled = computed(() => yell.value.type !== null);
 
-      if (!this.game || this.game.host !== this.user.uuid) {
-        this.$router.replace('/game-not-found');
-      } else {
-        this.isLoading = false;
-      }
-    },
-    async isGameStarted() {
-      if (
-        !this.game.hasStarted &&
-        this.game.drawnNumbers &&
-        this.game.drawnNumbers.length > 0
-      ) {
-        await fb.hasStarted(this.id);
-        this.$store.dispatch('gam/hasStarted');
-      }
-    },
-    notValidWinner() {
-      this.sendWsMsg({
-        type: 'notwinner',
-        winType: this.yell.type,
-        uuid: this.yell.uuid,
-      });
-      this.closeYell();
-    },
-    sendWsMsg(data) {
-      this.ws.send({
-        ...data,
-        gameId: this.id,
-      });
-    },
-    async setValidWinner() {
-      if (this.yell.type !== null) {
-        this.$store.dispatch('gam/setWinner', {
-          uuid: this.yell.uuid,
-          type: this.yell.type,
+        const yell = computed(() => store.state.gam.yell);
+        const showYell = computed(() => yell.value.type !== null);
+        const yellCard = ref(null);
+
+        watch([showYell, yell], async ([newShowYell, newYell], [, oldYell]) => {
+            if (newShowYell && newYell && newYell.uuid !== oldYell.uuid) {
+                if (!players.value[newYell.uuid]) {
+                    try {
+                        const player = await apiService.getPlayer(game.value.hash, newYell.uuid);
+                        players.value[newYell.uuid] = player;
+                        yellCard.value = player.bingoCard;
+                    } catch (error) {
+                        console.error('API call failed:', error);
+                    }
+                } else {
+                    yellCard.value = players.value[newYell.uuid].bingoCard;
+                }
+            }
         });
 
-        // We wait to update the firebase before we send websocket message
-        const winners = this.$store.getters['gam/getWinners'];
-        await fb.updateWinners(this.game.hash, winners);
-
-        this.sendWsMsg({
-          type: 'winner',
-          winType: this.yell.type,
-          uuid: this.yell.uuid,
+        const yellTitle = computed(() => {
+            return yell.value
+                ? `¡Comprobar resultados de ${yell.value.type !== 'line' ? 'bingo' : 'línea'}!`
+                : '';
         });
 
-        if (this.yell.type === 'bingo') {
-          this.finishGame();
-        }
-      }
-      this.closeYell();
+        onMounted(async () => {
+            const theGame = await apiService.getHostGame(user.value.uuid);
+            if (!theGame) {
+                router.replace('/game-not-found');
+            }
+            store.dispatch('gam/updateGame', theGame);
+            store.dispatch('gam/connectWS', { gameId: props.id, uuid: user.value.uuid });
+        });
+
+        const yellData = computed(() => ({
+            playerName: players.value[yell.value?.uuid]?.name || '',
+            card: yellCard.value,
+            selectedNumbers: game.value.drawnNumbers,
+        }));
+
+        const closeYell = () => {
+            store.dispatch('gam/resetYell');
+        };
+
+        const drawNumber = async () => {
+            let loop = true;
+            while (loop) {
+                let randNum = Math.floor(Math.random() * Constants.BINGO_CARD_TOTAL_NUMBERS) + 1;
+                if (!game.value.drawnNumbers.includes(randNum)) {
+                    store.dispatch('gam/addDrawnNumber', randNum);
+                    await apiService.addDrawnNumbers(game.value.hash, user.value.uuid, randNum);
+                    break;
+                }
+                if (game.value.drawnNumbers.length >= Constants.BINGO_CARD_TOTAL_NUMBERS) {
+                    break;
+                }
+            }
+
+            sendWsMsg({
+                type: 'num',
+                num: drawnNumber.value,
+                uuid: user.value.uuid,
+            });
+        };
+
+        const finishGame = async () => {
+            await apiService.hasFinished(game.value.hash, user.value.uuid);
+            store.dispatch('gam/hasFinished');
+            sendWsMsg({
+                type: 'finish',
+                uuid: user.value.uuid,
+            });
+        };
+
+        const notValidWinner = () => {
+            sendWsMsg({
+                type: 'notwinner',
+                winType: yell.value.type,
+                uuid: yell.value.uuid,
+            });
+            closeYell();
+        };
+
+        const deleteGame = async () => {
+            await apiService.deleteGame(game.value.hash, user.value.uuid);
+            store.dispatch('gam/resetGame');
+            router.replace('/');
+        };
+
+        const setValidWinner = async () => {
+            if (yell.value.type !== null) {
+                store.dispatch('gam/setWinner', {
+                    uuid: yell.value.uuid,
+                    type: yell.value.type,
+                });
+
+                const winners = store.getters['gam/getWinners'];
+                await apiService.updateWinners(game.value.hash, user.value.uuid, toRaw(winners));
+
+                sendWsMsg({
+                    type: 'winner',
+                    winType: yell.value.type,
+                    uuid: yell.value.uuid,
+                });
+
+                if (yell.value.type === 'bingo') {
+                    finishGame();
+                }
+            }
+            closeYell();
+        };
+
+        return {
+            game,
+            user,
+            maxDrawnNumbers,
+            drawnNumber,
+            isAutomodeEnabled,
+            drawNumber,
+            deleteGame,
+            showYell,
+            yellTitle,
+            yellData,
+            finishGame,
+            notValidWinner,
+            setValidWinner,
+        };
     },
-  },
-  created() {
-    this.getGameInfo();
-  },
-  mounted() {
-    this.ws = wsManager;
-    this.ws.connect(this.id, this.user.uuid);
-  },
 };
 </script>
 
 <style lang="scss" scoped>
-@import '@/scss/_variables.scss';
+@import '@scss/_variables.scss';
 
 b {
-  font-weight: 800;
-}
-.user-bingo-card-wrapper {
-  border: 1px solid #000;
-  border-radius: 1rem;
-  .user-bingo-card {
-    display: grid;
-    grid-template-columns: repeat(9, 10.2%);
-    grid-gap: 1%;
-    padding: 1%;
-    .user-number {
-      font-size: 1.8rem;
-      color: #000;
-      position: relative;
-      z-index: 100;
-      text-align: center;
-      border-radius: 15%;
-      background-color: #fff;
-      &.selected {
-        background-color: $fifth;
-      }
-      &.empty {
-        background-color: #333333;
-        cursor: initial;
-      }
-    }
-  }
+    font-weight: 800;
 }
 </style>

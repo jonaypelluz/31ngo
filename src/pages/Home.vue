@@ -1,86 +1,74 @@
 <template>
-  <base-centre-container>
-    <h1><img class="logo mt-4 mb-2" src="@/assets/logo.svg" alt="31ngo" /></h1>
-    <p class="description">
-      Para poder jugar al <b>BINGO</b> se ha de crear una partida siendo
-      anfitrión si no está creada, después con el código creado desde otro
-      explorador, ya sea en el móvil o en un ordenador se podrá acceder a la
-      partida
-    </p>
-    <base-button v-if="showActions" link :to="hostUrl" class="mr-5">
-      Anfitrión
-    </base-button>
-    <base-button v-if="showActions" link :to="playerUrl">Jugador</base-button>
-  </base-centre-container>
+    <base-centre-container>
+        <h1><img class="logo mt-4 mb-2" src="@assets/logo.svg" alt="31ngo" /></h1>
+        <p class="description">
+            Para jugar al <b>BINGO</b>, primero se debe establecer una partida como anfitrión, si
+            aún no existe. Luego, usando el código generado, se puede unir a la partida desde otro
+            navegador, ya sea en un teléfono móvil o en una computadora.
+        </p>
+        <base-button link to="host" class="mr-5">Anfitrión</base-button>
+        <base-button link to="player">Jugador</base-button>
+    </base-centre-container>
 </template>
 
 <script>
-import helpers from '@/utils/helpers.js';
-import fb from '@/services/firebase/fb.js';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import apiService from '@services/apiService';
+import helpers from '@utils/helpers';
 
 export default {
-  data() {
-    return {
-      showActions: false,
-    };
-  },
-  computed: {
-    hostUrl() {
-      return 'host';
+    setup() {
+        const store = useStore();
+        const router = useRouter();
+
+        onMounted(async () => {
+            const user = store.getters['getUser'];
+
+            if (!user.uuid) {
+                const uuid = helpers.uuidv4();
+                store.dispatch('setUserUUID', uuid);
+            }
+
+            const theGame = await apiService.getHostGame(user.uuid);
+            if (theGame) {
+                store.dispatch('gam/createGame', theGame);
+                router.push(`/games/host/${theGame.hash}`);
+            }
+        });
     },
-    playerUrl() {
-      return 'player';
-    },
-  },
-  created() {
-    const uuid = this.$store.getters['getUser'];
-    if (!uuid) {
-      this.showActions = true;
-      const uuid = helpers.uuidv4();
-      this.$store.dispatch('setUser', { uuid: uuid });
-    } else {
-      fb.getUserGame(uuid.uuid).then((game) => {
-        if (!game) {
-          this.showActions = true;
-        } else {
-          if (game.hasFinished) {
-            this.showActions = true;
-          } else {
-            this.$router.push(`/games/host/${game.hash}`);
-          }
-        }
-      });
-    }
-  },
 };
 </script>
 
 <style lang="scss" scoped>
 .logo {
-  width: 100%;
-  max-width: 6em;
+    width: 100%;
+    max-width: 4em;
 }
 
 .description {
-  max-width: 400px;
-  margin: 0 auto 1.5rem;
-  b {
-    font-weight: 800;
-  }
+    max-width: 400px;
+    margin: 0 auto 1.5rem;
+
+    b {
+        font-weight: 800;
+    }
 }
 
 @media (max-width: 575px) {
-  .logo {
-    max-width: 5em;
-  }
-  .description {
-    max-width: 80%;
-  }
+    .logo {
+        max-width: 5em;
+    }
+
+    .description {
+        max-width: 80%;
+    }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
-  .description {
-    max-width: 80%;
-  }
+    .description {
+        max-width: 80%;
+    }
 }
 </style>

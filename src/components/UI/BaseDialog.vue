@@ -1,123 +1,138 @@
 <template>
-  <teleport to="body">
-    <div v-if="show" @click="tryClose" class="backdrop"></div>
-    <transition name="dialog">
-      <dialog open v-if="show">
-        <header v-if="title">
-          <slot name="header">
-            <h2>{{ title }}</h2>
-          </slot>
-        </header>
-        <section>
-          <slot></slot>
-        </section>
-        <menu v-if="!fixed">
-          <slot name="actions">
-            <base-button @click="tryClose">Close</base-button>
-          </slot>
-        </menu>
-      </dialog>
-    </transition>
-  </teleport>
+    <teleport to="body">
+        <div v-if="show" class="backdrop" @click="tryClose"></div>
+        <transition name="dialog">
+            <dialog v-if="show" open>
+                <header v-if="title">
+                    <slot name="header">
+                        <h2>{{ title }}</h2>
+                    </slot>
+                </header>
+                <section>
+                    <slot></slot>
+                </section>
+                <menu v-if="!fixed">
+                    <slot name="actions">
+                        <base-button @click="tryClose">Close</base-button>
+                    </slot>
+                </menu>
+            </dialog>
+        </transition>
+    </teleport>
 </template>
 
 <script>
 export default {
-  props: {
-    show: {
-      type: Boolean,
-      required: true,
+    name: 'BaseDialog',
+    props: {
+        show: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        title: {
+            type: String,
+            required: false,
+            default: null,
+        },
+        fixed: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     },
-    title: {
-      type: String,
-      required: false,
+    emits: ['close'],
+    setup(props, { emit }) {
+        const tryClose = () => {
+            if (props.fixed) {
+                return;
+            }
+            emit('close');
+        };
+
+        return {
+            tryClose,
+        };
     },
-    fixed: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
-  emits: ['close'],
-  methods: {
-    tryClose() {
-      if (this.fixed) {
-        return;
-      }
-      this.$emit('close');
-    },
-  },
 };
 </script>
 
 <style lang="scss" scoped>
-@import '@/scss/_variables.scss';
+@import '@scss/_variables.scss';
 
 .backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
-  z-index: 1001;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 1001;
 }
 
 dialog {
-  position: fixed;
-  top: 13vh;
-  left: 10%;
-  width: 80%;
-  z-index: 1002;
-  border-radius: 1rem;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-  border: 2px solid #000;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  background-color: white;
-  header {
-    background-color: $third;
-    color: white;
-    width: 100%;
-    padding: 1rem;
-    h2 {
-      margin: 0;
-    }
-  }
-  section {
-    padding: 1rem;
-  }
-  menu {
-    padding: 1rem;
-    display: flex;
-    justify-content: flex-end;
+    position: fixed;
+    top: 2vh;
+    left: 10%;
+    width: 80%;
+    z-index: 1002;
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+    border: 2px solid #000;
+    padding: 0;
     margin: 0;
-  }
+    overflow: hidden;
+    background-color: white;
+
+    header {
+        background-color: $third;
+        color: white;
+        width: 100%;
+        padding: 0.5rem 1rem;
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+    }
+
+    section {
+        padding: 1rem;
+    }
+
+    menu {
+        padding: 1rem;
+        display: flex;
+        justify-content: flex-end;
+        margin: 0;
+    }
 }
 
 .dialog-enter-from,
 .dialog-leave-to {
-  opacity: 0;
-  transform: scale(0.8);
+    opacity: 0;
+    transform: scale(0.8);
 }
+
 .dialog-enter-active {
-  transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
 }
+
 .dialog-leave-active {
-  transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
 }
+
 .dialog-enter-to,
 .dialog-leave-from {
-  opacity: 1;
-  transform: scale(1);
+    opacity: 1;
+    transform: scale(1);
 }
 
 @media (min-width: 768px) {
-  dialog {
-    left: calc(50% - 20rem);
-    width: 40rem;
-  }
+    dialog {
+        left: calc(50% - 20rem);
+        width: 40rem;
+    }
 }
 </style>

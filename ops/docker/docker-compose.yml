@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: app
+    build:
+      context: ../../
+      dockerfile: ops/docker/app/Dockerfile
+    working_dir: /app
+    volumes:
+      - ../../:/app
+      - /app/node_modules
+    environment:
+      - VITE_APP_WS_URL=${VITE_APP_WS_URL}
+      - VITE_APP_API_URL=${VITE_APP_API_URL}
+    ports:
+      - 8080:8080
+
+  go:
+    container_name: go
+    build:
+      context: ../../
+      dockerfile: ops/docker/go/Dockerfile
+    working_dir: /app
+    ports:
+      - 8090:8090
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+    links:
+      - mongo
+
+  ws:
+    container_name: ws
+    build:
+      context: ../../
+      dockerfile: ops/docker/ws/Dockerfile
+    working_dir: /app
+    volumes:
+      - ../../ws:/app
+      - /app/node_modules
+    ports:
+      - 8443:8443
+      
+  nginx:
+    container_name: nginx
+    image: nginx:1.24-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ../../ops/docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+      - ws
+      - go
+    links:
+      - go
+      - ws
+      - app
+
+  mongo:
+    container_name: mongo
+    image: mongo:4.4
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - 27017:27017

@@ -1,31 +1,43 @@
 {
   "name": "31ngo",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
+    "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
+    "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
   },
   "dependencies": {
-    "@vue/cli": "^4.5.8",
-    "axios": "^0.21.0",
-    "core-js": "^3.6.5",
-    "events": "^3.2.0",
-    "firebase": "^8.1.1",
-    "node-sass": "^4.14.1",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.0-rc.6",
-    "vuex": "^4.0.0-rc.2"
+    "axios": "^1.6.3",
+    "events": "^3.3.0",
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.5",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/compiler-sfc": "^3.0.0-0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0-0",
-    "sass-loader": "^10.0.3"
+    "@rushstack/eslint-patch": "^1.6.1",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vitejs/plugin-vue-jsx": "^3.1.0",
+    "@vue/eslint-config-prettier": "^9.0.0",
+    "@vue/test-utils": "^2.4.3",
+    "eslint": "^8.56.0",
+    "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-vue": "^9.19.2",
+    "jsdom": "^23.0.1",
+    "prettier": "^3.1.1",
+    "sass": "^1.69.6",
+    "start-server-and-test": "^2.0.3",
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0"
+  },
+  "engines": {
+      "npm": ">=10.2.3 <11.0.0",
+      "node": ">=20.10.0 <21.0.0"
   }
 }
