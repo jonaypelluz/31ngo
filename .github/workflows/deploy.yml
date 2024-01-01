@@ -48,6 +48,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: package31ngo
+      - name: Display structure of downloaded files
+        run: ls -R
       - name: Copy dist files to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -56,5 +58,5 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: dist/*
+          source: 31ngo/dist/*
           target: /home/${{ secrets.SSH_USERNAME }}/app/
