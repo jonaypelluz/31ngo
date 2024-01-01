@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: package31ngo
-          path: ./dist
+          path: dist
 
   deploy:
     runs-on: ubuntu-latest
@@ -56,5 +56,5 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: ./dist/*
+          source: dist/*
           target: /home/${{ secrets.SSH_USERNAME }}/app/
