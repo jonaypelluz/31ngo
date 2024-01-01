@@ -48,16 +48,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: package31ngo
-      - name: Connect to the server
-        uses: shimataro/ssh-key-action@v2
+      - name: copy file to server
+        uses: appleboy/scp-action@v0.1.7
         with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          name: ${{ secrets.SSH_KEY_NAME }}
-          known_hosts: ${{ secrets.SSH_HOST }}
-          config: |
-            Host theServer
-                HostName ${{ secrets.SSH_IP }}
-                User ${{ secrets.SSH_USERNAME }}
-                IdentityFile ~/.ssh/${{ secrets.SSH_KEY_NAME }}
-      - name: SCP content to server
-        run: scp -v ./dist/ ${{ secrets.SSH_IP }}:/home/${{ secrets.SSH_USERNAME }}/app/
+          port: 22
+          source: ./dist/*
+          target: /home/${{ secrets.SSH_USERNAME }}/app/
