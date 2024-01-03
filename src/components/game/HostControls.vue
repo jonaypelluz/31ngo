@@ -172,7 +172,7 @@ export default {
 }
 
 .drawn-number {
-    font-size: 10rem;
+    font-size: 9rem;
     line-height: 1;
     margin-bottom: 1rem;
 }
