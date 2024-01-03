@@ -2,7 +2,23 @@
     <the-header v-if="showHeader"></the-header>
     <router-view></router-view>
     <bg-bubbles></bg-bubbles>
-    <p class="beta">31ngo beta v.1.0</p>
+    <footer>
+        <a
+                target="_blank"
+                href="https://www.buymeacoffee.com/jonaypelluz"
+                rel="noopener noreferrer"
+                className="buy-m-a-coffee"
+            >
+                <img
+                    src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg"
+                    alt="Buy Me a Coffee"
+                />
+                <span>
+                    Buy Me a Coffee
+                </span>
+            </a>
+        <p class="beta">31ngo beta v.1.0</p>
+    </footer>
 </template>
 
 <script>
@@ -58,6 +74,37 @@ body {
     background: $primary;
 }
 
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: self-end;
+    padding: 12px 6px 6px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+
+    img {
+        width: 16px;
+    }
+
+    p {
+        margin-bottom: 0;
+    }
+
+    a {
+        color: #fff;
+
+        &:hover, &:focus, &:active {
+            color: #fff;
+        }
+
+        span {
+            position: relative;
+            top: 2px;
+        }
+    }
+}
+
 .black {
     color: #000;
 }
@@ -77,12 +124,6 @@ input[type='number'] {
 .form-wrapper {
     max-width: 60%;
     margin: 0 auto;
-}
-
-.beta {
-    position: fixed;
-    right: 10px;
-    bottom: -7px;
 }
 
 @media (max-width: 575px) {
