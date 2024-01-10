@@ -20,13 +20,13 @@
         <p class="beta">31ngo beta v.1.0</p>
     </footer>
 </template>
-
 <script>
 import { computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import BgBubbles from '@ui/BgBubbles.vue';
 import TheHeader from '@ui/TheHeader.vue';
+import isMobileDevice from '@utils/isMobileDevice';
 
 export default {
     components: {
@@ -39,8 +39,19 @@ export default {
 
         const showHeader = computed(() => !route.meta.hideHeader);
 
+        const lockOrientationOnMobile = () => {
+            if (isMobileDevice()) {
+                try {
+                    screen.orientation.lock('landscape');
+                } catch (error) {
+                    //logger.info("Orientation lock not supported");
+                }
+            }
+        };
+
         onMounted(() => {
             store.dispatch('autoLogin');
+            lockOrientationOnMobile();
         });
 
         return {
@@ -49,6 +60,7 @@ export default {
     },
 };
 </script>
+
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300');
