@@ -1,12 +1,32 @@
-import EventEmitter from 'events';
 import Peer from 'peerjs';
 
-class PeerHostService extends EventEmitter {
+class PeerHostService {
     constructor() {
-        super();
+        this._listeners = {};
         this.peer = null;
         this.connections = {};
         this.playerData = {};
+    }
+
+    emit(event, ...args) {
+        (this._listeners[event] || []).forEach((fn) => fn(...args));
+    }
+
+    on(event, fn) {
+        if (!this._listeners[event]) {
+            this._listeners[event] = [];
+        }
+        this._listeners[event].push(fn);
+    }
+
+    off(event, fn) {
+        if (this._listeners[event]) {
+            this._listeners[event] = this._listeners[event].filter((f) => f !== fn);
+        }
+    }
+
+    removeAllListeners() {
+        this._listeners = {};
     }
 
     create(gameId) {

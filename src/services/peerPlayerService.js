@@ -1,14 +1,34 @@
-import EventEmitter from 'events';
 import Peer from 'peerjs';
 
-class PeerPlayerService extends EventEmitter {
+class PeerPlayerService {
     constructor() {
-        super();
+        this._listeners = {};
         this.peer = null;
         this.conn = null;
         this._currentGameId = null;
         this._uuid = null;
         this._reconnectTimeout = null;
+    }
+
+    emit(event, ...args) {
+        (this._listeners[event] || []).forEach((fn) => fn(...args));
+    }
+
+    on(event, fn) {
+        if (!this._listeners[event]) {
+            this._listeners[event] = [];
+        }
+        this._listeners[event].push(fn);
+    }
+
+    off(event, fn) {
+        if (this._listeners[event]) {
+            this._listeners[event] = this._listeners[event].filter((f) => f !== fn);
+        }
+    }
+
+    removeAllListeners() {
+        this._listeners = {};
     }
 
     connect(gameId, uuid) {
