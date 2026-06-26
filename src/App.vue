@@ -37,8 +37,8 @@ export default {
 </script>
 
 <style lang="scss">
+@use './scss/_variables.scss' as *;
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300');
-@import './scss/_variables.scss';
 
 * {
     box-sizing: border-box;

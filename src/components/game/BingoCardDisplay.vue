@@ -39,7 +39,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@scss/_variables.scss';
+@use '@scss/_variables.scss' as *;
 
 .bingo-card-display {
     border: 1px solid #000;

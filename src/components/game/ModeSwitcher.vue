@@ -60,7 +60,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@scss/_variables.scss';
+@use '@scss/_variables.scss' as *;
 
 .switch-btn {
     display: inline-flex;

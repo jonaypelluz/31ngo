@@ -5,7 +5,7 @@
 </template>
 
 <style lang="scss" scoped>
-@import '@scss/_variables.scss';
+@use '@scss/_variables.scss' as *;
 
 .card-box {
     background: $secondary;
