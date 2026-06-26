@@ -2,7 +2,17 @@
     <base-centre-container>
         <div class="form-wrapper text-center">
             <h2 class="mb-2">Anfitrión</h2>
-            <div v-if="!mode" class="game-mode">
+            <div v-if="activeHash && !isGameCreated" class="resume-game">
+                <p>
+                    Tienes una partida activa (<strong>{{ activeHash }}</strong
+                    >)
+                </p>
+                <base-button class="mb-2" mode="animation" link :to="`/games/host/${activeHash}`">
+                    Retomar partida
+                </base-button>
+                <base-button mode="flat" @click="clearActiveGame">Nueva partida</base-button>
+            </div>
+            <div v-if="!activeHash && !mode" class="game-mode">
                 <label>Elige el modo de juego</label>
                 <p class="description">
                     En el modo de juego <b>PÚBLICO</b> podrán participar los jugadores que quieran,
@@ -13,7 +23,7 @@
                 <base-button mode="flat" @click="chooseGameMode('private')">Privado</base-button>
                 <base-button class="ml-3" @click="chooseGameMode('public')">Público</base-button>
             </div>
-            <div v-if="mode === 'private'">
+            <div v-if="!activeHash && mode === 'private'">
                 <label>Introduce cantidad de jugadores</label>
                 <div class="controls">
                     <base-button mode="flat" @click="decreasePlayers">-</base-button>
@@ -21,7 +31,7 @@
                     <base-button mode="flat" class="pb-0" @click="increasePlayers">+</base-button>
                 </div>
             </div>
-            <base-button v-if="showCreateBtn" mode="animation" @click="createGame">
+            <base-button v-if="!activeHash && showCreateBtn" mode="animation" @click="createGame">
                 Crear partida
             </base-button>
             <base-card v-if="isGameCreated">
@@ -47,8 +57,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 import Constants from '@constants';
 import helpers from '@utils/helpers';
@@ -56,11 +65,11 @@ import helpers from '@utils/helpers';
 export default {
     setup() {
         const store = useStore();
-        const router = useRouter();
 
         const players = ref(0);
         const copiedText = ref('');
         const mode = ref(null);
+        const activeHash = ref(localStorage.getItem('hostActiveGame'));
 
         const game = computed(() => store.state.gam.game);
 
@@ -77,12 +86,12 @@ export default {
             );
         });
 
-        onMounted(() => {
-            const activeHash = localStorage.getItem('hostActiveGame');
-            if (activeHash) {
-                router.push(`/games/host/${activeHash}`);
-            }
-        });
+        const clearActiveGame = () => {
+            localStorage.removeItem('hostActiveGame');
+            localStorage.removeItem('hostActiveGame_state');
+            store.dispatch('gam/resetGame');
+            activeHash.value = null;
+        };
 
         const chooseGameMode = (selectedMode) => {
             if (
@@ -131,6 +140,8 @@ export default {
 
             store.dispatch('gam/createGame', newGame);
             localStorage.setItem('hostActiveGame', newGame.hash);
+            localStorage.setItem('hostActiveGame_state', JSON.stringify(newGame));
+            activeHash.value = null;
         };
 
         return {
@@ -138,6 +149,7 @@ export default {
             game,
             copiedText,
             mode,
+            activeHash,
             showCreateBtn,
             isGameCreated,
             hostUrl,
@@ -146,6 +158,7 @@ export default {
             increasePlayers,
             decreasePlayers,
             createGame,
+            clearActiveGame,
         };
     },
 };
@@ -202,5 +215,25 @@ label {
 
 .copy-svg {
     cursor: pointer;
+}
+
+.resume-game {
+    p {
+        margin-bottom: 1.5rem;
+
+        strong {
+            font-weight: 700;
+            color: #fff;
+        }
+    }
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+
+    :deep(.base-button) {
+        width: 14rem;
+    }
 }
 </style>

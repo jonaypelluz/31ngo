@@ -94,10 +94,16 @@ export default {
         });
 
         onMounted(() => {
-            const game = store.getters['gam/getGame'];
-            if (!game || !game.hash) {
-                router.replace('/game-not-found');
-                return;
+            let currentGame = store.getters['gam/getGame'];
+            if (!currentGame || !currentGame.hash) {
+                const activeHash = localStorage.getItem('hostActiveGame');
+                if (props.id !== activeHash) {
+                    router.replace('/game-not-found');
+                    return;
+                }
+                const saved = localStorage.getItem('hostActiveGame_state');
+                const gameData = saved ? JSON.parse(saved) : { hash: props.id };
+                store.dispatch('gam/createGame', gameData);
             }
             store.dispatch('gam/connectPeerAsHost', { gameId: props.id });
         });
@@ -137,6 +143,7 @@ export default {
 
         const deleteGame = () => {
             localStorage.removeItem('hostActiveGame');
+            localStorage.removeItem('hostActiveGame_state');
             store.dispatch('gam/resetGame');
             router.replace('/');
         };
