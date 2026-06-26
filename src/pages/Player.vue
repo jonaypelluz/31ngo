@@ -49,7 +49,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import Constants from '@constants';
-import apiService from '@services/apiService';
+import { peerPlayerService } from '@services/peerPlayerService';
 
 export default {
     setup() {
@@ -69,38 +69,59 @@ export default {
             store.dispatch('gam/resetGame');
         });
 
-        const checkGame = async () => {
+        const checkGame = () => {
             isLoading.value = true;
-            try {
-                const theGame = await apiService.getGame(gameId.value);
-                if (theGame) {
-                    game.value = theGame;
-                    checkIfExists();
-                } else {
-                    error.value = 'No se ha encontrado la partida';
+            error.value = '';
+
+            let resolved = false;
+
+            const onMessage = (data) => {
+                if (data.type !== 'game-state' || resolved) {
+                    return;
                 }
-            } catch (err) {
-                console.error('Error fetching game:', err);
-            } finally {
+                resolved = true;
+                peerPlayerService.off('peer-message', onMessage);
+                peerPlayerService.off('peer-error', onError);
+                game.value = data.game;
                 isLoading.value = false;
-            }
+                checkIfExists();
+            };
+
+            const onError = () => {
+                if (resolved) {
+                    return;
+                }
+                resolved = true;
+                peerPlayerService.off('peer-message', onMessage);
+                peerPlayerService.off('peer-error', onError);
+                peerPlayerService.destroy();
+                error.value = 'No se ha encontrado la partida';
+                isLoading.value = false;
+            };
+
+            peerPlayerService.on('peer-message', onMessage);
+            peerPlayerService.on('peer-error', onError);
+            peerPlayerService.connect(gameId.value, user.value.uuid);
+
+            setTimeout(() => onError(), 10000);
         };
 
-        const sendGameCode = async () => {
+        const sendGameCode = () => {
             if (
-                game.value.codes.length !== game.value.players.length &&
-                game.value.codes.includes(gameCode.value)
+                game.value.codes.includes(gameCode.value) &&
+                !game.value.usedCodes.includes(gameCode.value)
             ) {
-                await apiService.addPlayerUsedCode(
-                    game.value.hash,
-                    gameCode.value,
-                    user.value.uuid,
-                );
-
+                sessionStorage.setItem(`privateCode-${game.value.hash}`, gameCode.value);
+                store.dispatch('gam/updateGame', game.value);
                 router.push(`/games/player/${game.value.hash}`);
             } else {
                 showCodeError.value = true;
             }
+        };
+
+        const routeToGame = () => {
+            store.dispatch('gam/updateGame', game.value);
+            router.push(`/games/player/${game.value.hash}`);
         };
 
         const checkIfExists = () => {
@@ -114,14 +135,15 @@ export default {
         const checkIfHasFinished = () => {
             if (game.value.hasFinished) {
                 error.value = 'Esa partida ya ha finalizado.';
+                peerPlayerService.destroy();
             } else {
                 checkIfInPlayers();
             }
         };
 
         const checkIfInPlayers = () => {
-            if (game.value.players && game.value.players.includes(user.value.uuid)) {
-                router.push(`/games/player/${game.value.hash}`);
+            if (game.value.players && user.value.uuid in game.value.players) {
+                routeToGame();
             } else {
                 checkIfHasStarted();
             }
@@ -130,6 +152,7 @@ export default {
         const checkIfHasStarted = () => {
             if (game.value.hasStarted) {
                 error.value = 'Esa partida ya ha empezado.';
+                peerPlayerService.destroy();
             } else {
                 checkIfPrivate();
             }
@@ -139,7 +162,7 @@ export default {
             if (game.value.mode === Constants.BINDO_MODE_PRIVATE) {
                 showCodeModal.value = true;
             } else {
-                router.push(`/games/player/${game.value.hash}`);
+                routeToGame();
             }
         };
 
@@ -154,10 +177,6 @@ export default {
             showCodeError,
             checkGame,
             sendGameCode,
-            checkIfHasFinished,
-            checkIfInPlayers,
-            checkIfHasStarted,
-            checkIfPrivate,
         };
     },
 };

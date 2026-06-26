@@ -3,21 +3,8 @@
     <router-view></router-view>
     <bg-bubbles></bg-bubbles>
     <footer>
-        <a
-                target="_blank"
-                href="https://www.buymeacoffee.com/jonaypelluz"
-                rel="noopener noreferrer"
-                className="buy-m-a-coffee"
-            >
-                <img
-                    src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg"
-                    alt="Buy Me a Coffee"
-                />
-                <span>
-                    Buy Me a Coffee
-                </span>
-            </a>
-        <p class="beta">31ngo beta v.1.0</p>
+        <span class="powered">powered by @jonaypelluz</span>
+        <router-link to="/privacy">Privacidad</router-link>
     </footer>
 </template>
 <script>
@@ -26,7 +13,6 @@ import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import BgBubbles from '@ui/BgBubbles.vue';
 import TheHeader from '@ui/TheHeader.vue';
-import isMobileDevice from '@utils/isMobileDevice';
 
 export default {
     components: {
@@ -39,19 +25,8 @@ export default {
 
         const showHeader = computed(() => !route.meta.hideHeader);
 
-        const lockOrientationOnMobile = () => {
-            if (isMobileDevice()) {
-                try {
-                    screen.orientation.lock('landscape');
-                } catch (error) {
-                    //logger.info("Orientation lock not supported");
-                }
-            }
-        };
-
         onMounted(() => {
             store.dispatch('autoLogin');
-            lockOrientationOnMobile();
         });
 
         return {
@@ -60,7 +35,6 @@ export default {
     },
 };
 </script>
-
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300');
@@ -76,7 +50,6 @@ export default {
 html,
 body {
     height: 100%;
-    min-width: 360px;
 }
 
 body {
@@ -89,30 +62,21 @@ body {
 footer {
     display: flex;
     justify-content: space-between;
-    align-items: self-end;
-    padding: 12px 6px 6px;
+    align-items: center;
+    padding: 0.5rem 1rem;
     position: fixed;
     bottom: 0;
     width: 100%;
-
-    img {
-        width: 16px;
-    }
-
-    p {
-        margin-bottom: 0;
-    }
+    font-size: 0.65rem;
+    opacity: 0.4;
 
     a {
         color: #fff;
+        text-decoration: none;
 
-        &:hover, &:focus, &:active {
-            color: #fff;
-        }
-
-        span {
-            position: relative;
-            top: 2px;
+        &:hover {
+            text-decoration: underline;
+            opacity: 1;
         }
     }
 }
@@ -122,8 +86,7 @@ footer {
 }
 
 #app {
-    padding-top: 10px;
-    min-width: 376px;
+    padding-top: 0.625rem;
 }
 
 input[type='text'],

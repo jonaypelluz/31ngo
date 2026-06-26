@@ -62,10 +62,16 @@ export default {
 <style lang="scss" scoped>
 @import '@scss/_variables.scss';
 
+.switch-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    cursor: pointer;
+}
+
 .switch-label {
     display: inline-block;
     margin-left: 0.5rem;
-    margin-top: 0.1rem;
 }
 
 //switch btn --> https://codepen.io/maheshwaghmare/pen/QxdpqG

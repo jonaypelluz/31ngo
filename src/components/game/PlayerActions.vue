@@ -119,7 +119,7 @@ export default {
     .line-btn,
     .mark-btn {
         cursor: pointer;
-        width: 100px;
+        min-width: 6rem;
         background: $secondary;
         border-color: $secondary;
         position: fixed;
@@ -129,6 +129,8 @@ export default {
         border-radius: 0 0 1rem 1rem;
         top: 0;
         z-index: 1;
+        min-height: 2.75rem;
+        padding: 0.5rem 0.75rem;
 
         &:hover,
         &:focus,
@@ -149,12 +151,12 @@ export default {
     }
 
     .bingo-btn {
-        left: 45%;
+        left: 46%;
     }
 
     .mark-btn {
         width: auto;
-        right: 15%;
+        right: 12%;
     }
 }
 
@@ -167,19 +169,23 @@ export default {
 @media (max-width: 575px) {
     .player-drawn-number {
         .drawn-number {
-            font-size: 2.5rem;
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
 
             span {
-                top: 14px;
+                top: 10px;
+            }
+
+            .main-logo {
+                max-width: 40px;
             }
         }
 
         .line-btn,
         .bingo-btn,
         .mark-btn {
-            font-size: 1rem;
-            padding: 5px;
-            width: auto;
+            font-size: 0.9rem;
+            padding: 0.5rem 0.4rem;
+            min-width: 0;
         }
 
         .line-btn {
@@ -187,11 +193,11 @@ export default {
         }
 
         .bingo-btn {
-            left: 40%;
+            left: 43%;
         }
 
         .mark-btn {
-            right: 1%;
+            right: 0.5%;
         }
     }
 }

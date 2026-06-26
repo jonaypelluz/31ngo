@@ -50,20 +50,25 @@ a {
     background-color: $fifth-lighter;
     border-radius: 0.5rem;
     border: 0.1rem solid $fifth-darker;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     color: #000;
     text-transform: uppercase;
     font-size: 1.2rem;
     font-weight: 300;
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1rem;
+    min-height: 2.75rem;
     text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
     &:hover,
     &:focus {
         background-color: $fifth;
     }
     &.sm {
-        padding: 0.2rem 1rem;
+        padding: 0.375rem 1rem;
+        min-height: 2.75rem;
     }
     &.flat {
         background: transparent;

@@ -52,13 +52,11 @@ export default {
     },
     setup(props) {
         const onlinePlayers = computed(() => {
-            let players = '';
+            const count = Object.keys(props.game.players || {}).length;
             if (props.game.mode === Constants.BINDO_MODE_PRIVATE) {
-                players = props.game.players.length + '/' + props.game.maxPlayers;
-            } else {
-                players = props.game.players.length;
+                return count + '/' + props.game.maxPlayers;
             }
-            return players;
+            return count;
         });
 
         const showPlayersCodes = computed(() => {

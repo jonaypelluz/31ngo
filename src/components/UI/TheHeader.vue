@@ -18,10 +18,13 @@ a {
 }
 
 header {
-    height: 40px;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
 }
 
 .main-logo {
-    max-width: 60px;
+    max-width: 3.75rem;
+    display: block;
 }
 </style>

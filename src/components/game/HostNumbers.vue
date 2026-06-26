@@ -96,40 +96,23 @@ h6 {
     font-size: 1.5rem;
 }
 
-@media (max-width: 320px) {
+@media (max-width: 575px) {
     ul li div {
-        width: 0.45rem;
-        font-size: 1rem;
+        width: clamp(1.2rem, 4vw, 1.5rem);
+        font-size: clamp(0.75rem, 3vw, 1.1rem);
+        margin: 0 0.15rem;
 
         &.selected {
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 2.8vw, 1rem);
         }
     }
 
     .numbers-card {
-        padding: 1rem 2rem;
+        padding: 0.75rem 1rem;
     }
 }
 
-@media (min-width: 321px) and (max-width: 575px) {
-    ul li div {
-        width: 1.5rem;
-        font-size: 1.1rem;
-    }
-
-    .numbers-card {
-        padding: 1rem 2rem;
-    }
-}
-
-@media (min-width: 576px) and (max-width: 767px) {
-    ul li div {
-        width: 1.5rem;
-        font-size: 1.2rem;
-    }
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 576px) and (max-width: 991px) {
     ul li div {
         width: 1.5rem;
         font-size: 1.2rem;

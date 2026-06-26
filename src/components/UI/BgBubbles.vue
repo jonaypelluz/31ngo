@@ -1,7 +1,12 @@
 <template>
     <ul class="bg-bubbles">
-        <li v-for="(number, index) in numbers" :key="index" :style="bubbleStyle()">
-            <span>{{ number }}</span>
+        <li
+            v-for="(item, index) in bubbles"
+            :key="index"
+            :style="item.style"
+            :class="`bubble-color-${item.colorClass}`"
+        >
+            <span>{{ item.number }}</span>
         </li>
     </ul>
 </template>
@@ -12,34 +17,46 @@ import { ref } from 'vue';
 export default {
     name: 'BgBubbles',
     setup() {
-        const count = 20;
-        const numbers = ref([]);
+        const count = 40;
+        const bubbles = ref([]);
 
-        const generateRandomNumbers = (count, max) => {
-            return Array.from({ length: count }, () => Math.floor(Math.random() * max) + 1);
+        const usedNumbers = new Set();
+        const getUniqueNumber = () => {
+            let n;
+            do {
+                n = Math.floor(Math.random() * 90) + 1;
+            } while (usedNumbers.has(n));
+            usedNumbers.add(n);
+            return n;
         };
 
-        const bubbleStyle = () => {
-            const size = Math.random() * 100 + 20;
+        bubbles.value = Array.from({ length: count }, () => {
+            const size = Math.random() * 90 + 25;
             const left = Math.random() * 100;
-            const padding = Math.random() * 10;
-            const animationDelay = Math.random() * 20;
-            const animationDuration = Math.random() * 40 + 10;
+            const padding = Math.random() * 8;
+            const animationDelay = Math.random() * 25;
+            const animationDuration = Math.random() * 45 + 15;
+            const opacity = (Math.random() * 0.12 + 0.05).toFixed(2);
+            const colorClass = Math.floor(Math.random() * 5);
+            const number = getUniqueNumber();
 
             return {
-                width: `${size}px`,
-                height: `${size}px`,
-                left: `${left}%`,
-                padding: `${padding}px`,
-                animationDelay: `${animationDelay}s`,
-                animationDuration: `${animationDuration}s`,
-                fontSize: `${size / 2}px`,
+                number,
+                colorClass,
+                style: {
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    left: `${left}%`,
+                    padding: `${padding}px`,
+                    animationDelay: `${animationDelay}s`,
+                    animationDuration: `${animationDuration}s`,
+                    fontSize: `${size * 0.42}px`,
+                    opacity,
+                },
             };
-        };
+        });
 
-        numbers.value = generateRandomNumbers(count, 90);
-
-        return { numbers, bubbleStyle };
+        return { bubbles };
     },
 };
 </script>
@@ -47,14 +64,6 @@ export default {
 <style lang="scss" scoped>
 @import '@scss/_variables.scss';
 
-@mixin animation($animation) {
-    -webkit-animation: $animation;
-    -moz-animation: $animation;
-    -o-animation: $animation;
-    animation: $animation;
-}
-
-/* source: https://codepen.io/Lewitje/pen/BNNJjo */
 .bg-bubbles {
     position: absolute;
     overflow: hidden;
@@ -70,26 +79,38 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: 80px;
-        width: 40px;
-        height: 40px;
+        border-radius: 50%;
         background-color: #fff;
-        opacity: 0.1;
-        bottom: -160px;
+        bottom: -200px;
         text-align: center;
         color: #000;
         line-height: 1;
+        animation: circle 25s infinite linear;
 
-        @include animation(circle 25s infinite linear);
+        &.bubble-color-0 {
+            background-color: #ffffff;
+        }
+        &.bubble-color-1 {
+            background-color: #e8f4ff;
+        }
+        &.bubble-color-2 {
+            background-color: #fff5cc;
+        }
+        &.bubble-color-3 {
+            background-color: #ffe0e0;
+        }
+        &.bubble-color-4 {
+            background-color: #e0ffe8;
+        }
     }
 }
 
 @keyframes circle {
     0% {
-        transform: translateY(0);
+        transform: translateY(0) rotate(0deg);
     }
     100% {
-        transform: translateY(-2000px) rotate(600deg);
+        transform: translateY(-2200px) rotate(720deg);
     }
 }
 </style>

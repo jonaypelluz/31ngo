@@ -4,7 +4,7 @@ export default function useSendWs(gameId) {
     const store = useStore();
 
     const sendWsMsg = (data) => {
-        store.dispatch('gam/sendWSMessage', {
+        store.dispatch('gam/sendPeerMessage', {
             ...data,
             gameId,
         });

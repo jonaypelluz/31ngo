@@ -1,51 +1,38 @@
 PROJECT_NAME = 31ngo
 
-CONTAINER_NAME ?= 31ngo-app
+CONTAINER_NAME ?= app
 
-CONTAINER = $$(docker ps | grep ${CONTAINER_NAME} | awk '{print $$1}')
-DOCKER_COMPOSE := --env-file .env -p ${PROJECT_NAME} -f ops/docker/docker-compose.yml
+CONTAINER = $$(docker ps | grep $(CONTAINER_NAME) | awk '{print $$1}')
+DOCKER_COMPOSE := -p $(PROJECT_NAME) -f ops/docker/docker-compose.yml
 
-## Builds the container image
-build: hosts copy-env delete-mongodb-data compose
-	
-copy-env:
-	sh ops/scripts/copy-env.sh development
-	sh ops/scripts/copy-env.sh development ws
+## Build and start the app container
+build:
+	docker-compose $(DOCKER_COMPOSE) up -d --build
 
-compose:
-	docker-compose ${DOCKER_COMPOSE} up -d --build
-
-delete-mongodb-data:
-	sh ops/scripts/delete-mongodb-data.sh
-
-hosts:
-	@./ops/scripts/hosts.sh
-
-## Starts the container
+## Start the app container
 start:
-	docker-compose ${DOCKER_COMPOSE} up -d
+	docker-compose $(DOCKER_COMPOSE) up -d
 
 restart: stop start
 
-## Stops the container
-stop: is-running
-	docker-compose ${DOCKER_COMPOSE} stop
+## Stop the app container
+stop:
+	docker-compose $(DOCKER_COMPOSE) stop
 
-## Attach shell to the container that is running
+## Attach shell to the running app container
 enter: is-running
-	@docker exec -it ${CONTAINER} /bin/bash
+	@docker exec -it $(CONTAINER) /bin/bash
 
-## Check javascript formatting errors
+## Run eslint
 lint: is-running
-	@docker exec -it ${CONTAINER} yarn lint
+	@docker exec -it $(CONTAINER) yarn lint
 
-## Fix javascript formatting errors
+## Fix eslint errors
 lint-fix: is-running
-	@docker exec -it ${CONTAINER} yarn lint:fix
+	@docker exec -it $(CONTAINER) yarn lint:fix
 
-## Check if the container is running
 is-running:
-	@docker exec ${CONTAINER} true 2>/dev/null || (echo "Docker container is not running - Please execute ---> make start or make build <--- to start it"; exit 1)
+	@docker exec $(CONTAINER) true 2>/dev/null || (echo "Container not running — run: make start or make build"; exit 1)
 
 # COLORS
 TPUT := $(shell command -v tput 2> /dev/null)
@@ -53,7 +40,6 @@ TPUT := $(shell command -v tput 2> /dev/null)
 ifdef TPUT
 	GREEN  := $(shell tput -Txterm setaf 2)
 	YELLOW := $(shell tput -Txterm setaf 3)
-	WHITE  := $(shell tput -Txterm setaf 7)
 	RESET  := $(shell tput -Txterm sgr0)
 endif
 
@@ -62,7 +48,7 @@ TARGET_MAX_CHAR_NUM=20
 help:
 	@echo ''
 	@echo 'Usage:'
-	@echo '  ${YELLOW}make${RESET} ${GREEN}<target>${RESET}'
+	@echo '  $(YELLOW)make$(RESET) $(GREEN)<target>$(RESET)'
 	@echo ''
 	@echo 'Targets:'
 	@awk '/^[a-zA-Z\-\_0-9]+:/ { \
@@ -70,7 +56,7 @@ help:
 		if (helpMessage) { \
 			helpCommand = substr($$1, 0, index($$1, ":")-1); \
 			helpMessage = substr(lastLine, RSTART + 3, RLENGTH); \
-			printf "  ${YELLOW}%-$(TARGET_MAX_CHAR_NUM)s${RESET} ${GREEN}%s${RESET}\n", helpCommand, helpMessage; \
+			printf "  $(YELLOW)%-$(TARGET_MAX_CHAR_NUM)s$(RESET) $(GREEN)%s$(RESET)\n", helpCommand, helpMessage; \
 		} \
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)

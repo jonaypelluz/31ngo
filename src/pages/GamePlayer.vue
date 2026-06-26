@@ -1,4 +1,7 @@
 <template>
+    <div class="rotate-hint">
+        <span>↻ Gira el móvil para ver mejor el cartón</span>
+    </div>
     <player-actions
         :game="game"
         :drawn-number="drawnNumber"
@@ -35,7 +38,6 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import PlayerActions from '@game/PlayerActions.vue';
 import PlayerCard from '@game/PlayerCard.vue';
-import apiService from '@services/apiService';
 import useSendWs from '@utils/useSendWs';
 
 export default {
@@ -103,27 +105,15 @@ export default {
                 : '';
         });
 
-        onMounted(async () => {
-            isLoading.value = true;
-            try {
-                const theGame = await apiService.getGame(props.id);
-                store.dispatch('gam/updateGame', theGame);
-            } catch (error) {
-                console.error('Error fetching user game:', error);
-            } finally {
-                isLoading.value = false;
-            }
-
-            const theUser = await apiService.getPlayer(props.id, user.value.uuid);
-            if (theUser) {
-                store.dispatch('setUser', theUser);
-            }
-            isLoading.value = false;
-
+        onMounted(() => {
             if (!game.value.hash || game.value.host === user.value.uuid) {
                 router.replace('/game-not-found');
+                return;
             }
-            store.dispatch('gam/connectWS', { gameId: props.id, uuid: user.value.uuid });
+            store.dispatch('gam/connectPeerAsPlayer', {
+                gameId: props.id,
+                uuid: user.value.uuid,
+            });
         });
 
         const addName = (data) => {
@@ -131,25 +121,23 @@ export default {
             userData.value = data;
         };
 
-        const addBingoCard = async () => {
+        const addBingoCard = () => {
             if (!userName.value || !userData.value) {
                 showNameError.value = true;
             } else {
-                const data = {
-                    ...userData.value,
-                    name: userName.value,
-                };
+                const data = { ...userData.value, name: userName.value };
+
+                const privateCode = sessionStorage.getItem(`privateCode-${game.value.hash}`);
+                if (privateCode) {
+                    data.code = privateCode;
+                    sessionStorage.removeItem(`privateCode-${game.value.hash}`);
+                }
+
                 showNameError.value = false;
                 showNameForm.value = false;
-                store.dispatch('gam/addPlayerUuid', toRaw(data.uuid));
+                store.dispatch('gam/addPlayerUuid', { uuid: toRaw(data.uuid), name: data.name });
 
-                await apiService.addPlayer(game.value.hash, user.value.uuid, data);
-
-                sendWsMsg({
-                    type: 'addplayer',
-                    data: data,
-                    uuid: user.value.uuid,
-                });
+                sendWsMsg({ type: 'addplayer', data, uuid: user.value.uuid });
             }
         };
 
@@ -201,5 +189,27 @@ export default {
     margin: 3rem;
     width: 3rem;
     height: 3rem;
+}
+
+.rotate-hint {
+    display: none;
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    z-index: 200;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+    .rotate-hint {
+        display: block;
+    }
 }
 </style>

@@ -52,7 +52,7 @@ export default {
         padding: 1%;
 
         .bingo-card-number {
-            font-size: 1.8rem;
+            font-size: clamp(0.9rem, 2.5vw, 1.8rem);
             color: #000;
             position: relative;
             z-index: 100;

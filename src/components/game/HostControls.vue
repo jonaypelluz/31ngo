@@ -161,13 +161,13 @@ export default {
     max-width: 80%;
     display: flex;
     align-items: center;
-    padding: 12px;
+    padding: 0.75rem;
     justify-content: space-evenly;
     margin: 0 auto;
 
     .game-control {
         border-right: 1px solid #fff;
-        padding-right: 48px;
+        padding-right: 3rem;
     }
 }
 
@@ -182,44 +182,47 @@ export default {
     margin-right: 1.5rem;
 }
 
-@media (max-width: 320px) {
+@media (max-width: 575px) {
     .host-card {
-        max-width: 80%;
-        margin-top: 1.4rem;
+        max-width: 98%;
+        flex-direction: column;
+        margin-top: 1rem;
+        gap: 1rem;
+
+        .game-control {
+            border-right: 0 none;
+            border-bottom: 1px solid #fff;
+            padding-right: 0;
+            padding-bottom: 1rem;
+            width: 100%;
+            text-align: center;
+        }
     }
 
     .drawn-number {
-        font-size: 8rem;
-        margin-bottom: 1rem;
+        font-size: clamp(4rem, 20vw, 8rem);
+        margin-bottom: 0.5rem;
     }
 
     .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+
         .finish-btn {
             margin-right: 0;
-            margin-bottom: 2rem;
         }
-    }
-}
-
-@media (min-width: 321px) and (max-width: 575px) {
-    .host-card {
-        max-width: 80%;
-        margin-top: 1.4rem;
-    }
-
-    .drawn-number {
-        font-size: 8rem;
-        margin-bottom: 1rem;
     }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
     .host-card {
-        max-width: 96%;
+        max-width: 98%;
     }
 
     .drawn-number {
-        font-size: 8rem;
+        font-size: 7rem;
         margin-bottom: 1rem;
     }
 }

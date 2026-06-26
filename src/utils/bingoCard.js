@@ -39,10 +39,10 @@ class BingoCard {
         let colsNum = [0, 1, 2, 3, 4, 5, 6, 7, 8]; //Two arrays to secure numbers in all columns
         let colsOddNum = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         let cols = [];
-        let stop = 0; //Avoid eternal loop
         for (let x = 0; x < this.#ROWS; x++) {
             let loop = true;
             let count = 0;
+            let stop = 0; //Avoid eternal loop — reset per row
 
             while (loop) {
                 let pos = x === 1 && colsOddNum.length > 0 ? colsOddNum[0] : colsNum[0];
@@ -182,12 +182,13 @@ class BingoCard {
 
         //loop to get random numbers in the serie
         let randNum = null;
-        let loop = true;
-        while (loop) {
+        let attempts = 0;
+        while (attempts < 200) {
             randNum = this.getRandNumInARange(maxMinSerieNum[1], maxMinSerieNum[0]);
             if (!numbers.includes(randNum)) {
                 break;
             }
+            attempts++;
         }
 
         return randNum;

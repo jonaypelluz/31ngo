@@ -1,13 +1,14 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import GameHost from './pages/GameHost.vue';
 import GamePlayer from './pages/GamePlayer.vue';
 import Home from './pages/Home.vue';
 import Host from './pages/Host.vue';
 import NotFound from './pages/NotFound.vue';
 import Player from './pages/Player.vue';
+import PrivacyPolicy from './pages/PrivacyPolicy.vue';
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes: [
         { path: '/', component: Home, meta: { hideHeader: true } },
         { path: '/host', name: 'host', component: Host, meta: { needsUuid: true } },
@@ -31,6 +32,7 @@ const router = createRouter({
             props: true,
             meta: { needsUuid: true },
         },
+        { path: '/privacy', component: PrivacyPolicy, meta: { hideHeader: false } },
         { path: '/game-not-found', component: NotFound, meta: { type: 'game' } },
         { path: '/:notFound(.*)', component: NotFound },
     ],

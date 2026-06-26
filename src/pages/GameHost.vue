@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref, toRaw, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import Constants from '@constants';
@@ -39,7 +39,7 @@ import HostControls from '@game/HostControls.vue';
 import HostNumbers from '@game/HostNumbers.vue';
 import WinnerAnnouncement from '@game/WinnerAnnouncement.vue';
 import YellDialog from '@game/YellDialog.vue';
-import apiService from '@services/apiService';
+import { peerHostService } from '@services/peerHostService';
 import useSendWs from '@utils/useSendWs';
 
 export default {
@@ -73,15 +73,13 @@ export default {
         const showYell = computed(() => yell.value.type !== null);
         const yellCard = ref(null);
 
-        watch([showYell, yell], async ([newShowYell, newYell], [, oldYell]) => {
+        watch([showYell, yell], ([newShowYell, newYell], [, oldYell]) => {
             if (newShowYell && newYell && newYell.uuid !== oldYell.uuid) {
                 if (!players.value[newYell.uuid]) {
-                    try {
-                        const player = await apiService.getPlayer(game.value.hash, newYell.uuid);
+                    const player = peerHostService.getPlayerData(newYell.uuid);
+                    if (player) {
                         players.value[newYell.uuid] = player;
                         yellCard.value = player.bingoCard;
-                    } catch (error) {
-                        console.error('API call failed:', error);
                     }
                 } else {
                     yellCard.value = players.value[newYell.uuid].bingoCard;
@@ -95,13 +93,13 @@ export default {
                 : '';
         });
 
-        onMounted(async () => {
-            const theGame = await apiService.getHostGame(user.value.uuid);
-            if (!theGame) {
+        onMounted(() => {
+            const game = store.getters['gam/getGame'];
+            if (!game || !game.hash) {
                 router.replace('/game-not-found');
+                return;
             }
-            store.dispatch('gam/updateGame', theGame);
-            store.dispatch('gam/connectWS', { gameId: props.id, uuid: user.value.uuid });
+            store.dispatch('gam/connectPeerAsHost', { gameId: props.id });
         });
 
         const yellData = computed(() => ({
@@ -114,60 +112,41 @@ export default {
             store.dispatch('gam/resetYell');
         };
 
-        const drawNumber = async () => {
-            let loop = true;
-            while (loop) {
-                let randNum = Math.floor(Math.random() * Constants.BINGO_CARD_TOTAL_NUMBERS) + 1;
-                if (!game.value.drawnNumbers.includes(randNum)) {
-                    store.dispatch('gam/addDrawnNumber', randNum);
-                    await apiService.addDrawnNumbers(game.value.hash, user.value.uuid, randNum);
-                    break;
-                }
-                if (game.value.drawnNumbers.length >= Constants.BINGO_CARD_TOTAL_NUMBERS) {
-                    break;
-                }
+        const drawNumber = () => {
+            const total = Constants.BINGO_CARD_TOTAL_NUMBERS;
+            if (game.value.drawnNumbers.length >= total) {
+                return;
             }
-
-            sendWsMsg({
-                type: 'num',
-                num: drawnNumber.value,
-                uuid: user.value.uuid,
-            });
+            let randNum;
+            do {
+                randNum = Math.floor(Math.random() * total) + 1;
+            } while (game.value.drawnNumbers.includes(randNum));
+            store.dispatch('gam/addDrawnNumber', randNum);
+            sendWsMsg({ type: 'num', num: randNum, uuid: user.value.uuid });
         };
 
-        const finishGame = async () => {
-            await apiService.hasFinished(game.value.hash, user.value.uuid);
+        const finishGame = () => {
             store.dispatch('gam/hasFinished');
-            sendWsMsg({
-                type: 'finish',
-                uuid: user.value.uuid,
-            });
+            sendWsMsg({ type: 'finish', uuid: user.value.uuid });
         };
 
         const notValidWinner = () => {
-            sendWsMsg({
-                type: 'notwinner',
-                winType: yell.value.type,
-                uuid: yell.value.uuid,
-            });
+            sendWsMsg({ type: 'notwinner', winType: yell.value.type, uuid: yell.value.uuid });
             closeYell();
         };
 
-        const deleteGame = async () => {
-            await apiService.deleteGame(game.value.hash, user.value.uuid);
+        const deleteGame = () => {
+            localStorage.removeItem('hostActiveGame');
             store.dispatch('gam/resetGame');
             router.replace('/');
         };
 
-        const setValidWinner = async () => {
+        const setValidWinner = () => {
             if (yell.value.type !== null) {
                 store.dispatch('gam/setWinner', {
                     uuid: yell.value.uuid,
                     type: yell.value.type,
                 });
-
-                const winners = store.getters['gam/getWinners'];
-                await apiService.updateWinners(game.value.hash, user.value.uuid, toRaw(winners));
 
                 sendWsMsg({
                     type: 'winner',

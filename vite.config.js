@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     plugins: [vue(), vueJsx()],
+    base: process.env.NODE_ENV === 'production' ? '/31ngo/' : '/',
     server: {
         host: '0.0.0.0',
         port: 8080,

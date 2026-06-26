@@ -51,7 +51,6 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import Constants from '@constants';
-import apiService from '@services/apiService';
 import helpers from '@utils/helpers';
 
 export default {
@@ -78,14 +77,10 @@ export default {
             );
         });
 
-        onMounted(async () => {
-            try {
-                const theGame = await apiService.getHostGame(user.value.uuid);
-                if (theGame && !theGame.hasFinished) {
-                    router.push(`/games/host/${theGame.hash}`);
-                }
-            } catch (error) {
-                console.error('Error fetching user game:', error);
+        onMounted(() => {
+            const activeHash = localStorage.getItem('hostActiveGame');
+            if (activeHash) {
+                router.push(`/games/host/${activeHash}`);
             }
         });
 
@@ -134,8 +129,8 @@ export default {
                 codes: codes,
             };
 
-            await apiService.createGame(newGame);
             store.dispatch('gam/createGame', newGame);
+            localStorage.setItem('hostActiveGame', newGame.hash);
         };
 
         return {

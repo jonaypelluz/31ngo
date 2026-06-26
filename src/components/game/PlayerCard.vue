@@ -179,33 +179,29 @@ export default {
 
 @media (max-width: 575px) {
     .wrapper .number {
-        font-size: 1.6rem;
+        font-size: clamp(1.2rem, 4.5vw, 1.8rem);
     }
 
     .controls {
-        .assign-card {
-            display: block;
-            margin: 0 auto;
-        }
-
+        .assign-card,
         .generate-card {
             display: block;
-            margin: 1.5rem auto;
+            margin: 1rem auto;
         }
     }
 
     .bingo-card {
-        max-width: 90%;
+        max-width: 98%;
     }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
     .wrapper .number {
-        font-size: 2.8rem;
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
     }
 
     .bingo-card {
-        max-width: 90%;
+        max-width: 92%;
     }
 }
 
@@ -229,15 +225,9 @@ export default {
     }
 }
 
-@media (min-width: 1200px) and (max-width: 1359px) {
+@media (min-width: 1200px) {
     .wrapper .number {
-        font-size: 4rem;
-    }
-}
-
-@media (min-width: 1360px) and (max-width: 1449px) {
-    .wrapper .number {
-        font-size: 4.5rem;
+        font-size: clamp(4rem, 3.5vw, 5rem);
     }
 }
 </style>
