@@ -1,2 +1,0 @@
-# 31ngo — Memory Index
-
