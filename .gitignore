@@ -1,4 +1,5 @@
 .DS_Store
+.claude/tmp/
 node_modules
 dist
 .vscode
